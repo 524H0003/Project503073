@@ -1,12 +1,27 @@
 {
     "compilerOptions": {
         "target": "ESNext",
-        "module": "nodenext",
-        "moduleResolution": "nodenext",
+        "module": "esnext",
+        "lib": [
+            "dom",
+            "dom.iterable",
+            "esnext"
+        ],
+        "noEmit": true,
+        "allowJs": false,
+        "esModuleInterop": true,
+        "isolatedModules": true,
+        "moduleResolution": "bundler",
         "types": [
             "vite/client"
         ],
         "jsx": "react-jsx",
-        "strict": true
+        "strict": true,
+        "baseUrl": ".",
+        "paths": {
+            "@/*": [
+                "resources/js/*"
+            ]
+        }
     }
 }
