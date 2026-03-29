@@ -26,7 +26,9 @@ export default function AuthenticationPopup() {
     { data, setData, post, errors, processing } = useForm({
       email: "",
       password: "",
+      confirmPassword: "",
       remember: false,
+      username: "",
     }),
     submit = (e: SubmitEvent) => {
       e.preventDefault();
@@ -59,6 +61,17 @@ export default function AuthenticationPopup() {
           <CardContent>
             <form onSubmit={submit} id={formId}>
               <div className="flex flex-col gap-6">
+                {!isLogin && (
+                  <div className="grid gap-2">
+                    <Label htmlFor="username">Username</Label>
+                    <Input
+                      id="username"
+                      value={data.username}
+                      onChange={(e) => setData("username", e.target.value)}
+                      required
+                    />
+                  </div>
+                )}
                 <div className="grid gap-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
@@ -89,6 +102,20 @@ export default function AuthenticationPopup() {
                     onChange={(e) => setData("password", e.target.value)}
                   />
                 </div>
+                {!isLogin && (
+                  <div className="grid gap-2">
+                    <Label htmlFor="confirmPassword">Confirm password</Label>
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      value={data.confirmPassword}
+                      onChange={(e) =>
+                        setData("confirmPassword", e.target.value)
+                      }
+                      required
+                    />
+                  </div>
+                )}
               </div>
             </form>
           </CardContent>
