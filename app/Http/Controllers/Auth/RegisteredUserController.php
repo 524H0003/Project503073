@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
-use Inertia\Inertia;
 
 class RegisteredUserController extends Controller
 {
@@ -27,10 +26,8 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        // Tự động đăng nhập ngay sau khi đăng ký
         Auth::login($user);
 
-        // Chuyển hướng về Dashboard
-        return redirect()->route('/');
+        return redirect('/');
     }
 }
