@@ -18,6 +18,8 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
 import { useForm } from "@inertiajs/react";
+import { AlertCircleIcon } from "lucide-react";
+import { Alert, AlertTitle, AlertDescription } from "./ui/alert";
 
 export default function LoginPopup() {
   const { data, setData, post, errors, processing } = useForm({
@@ -90,6 +92,16 @@ export default function LoginPopup() {
             >
               Login
             </Button>
+            {Object.values(errors).some((error) => error) && (
+              <Alert variant="destructive" className="max-w-md">
+                <AlertCircleIcon />
+                <AlertTitle>Authentication failed</AlertTitle>
+                <AlertDescription>
+                  Invalid email address or password. Please check your
+                  credentials and try again.
+                </AlertDescription>
+              </Alert>
+            )}
           </CardFooter>
         </Card>
       </AlertDialogContent>
