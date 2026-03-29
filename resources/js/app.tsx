@@ -1,10 +1,6 @@
 import { createInertiaApp } from "@inertiajs/react";
 import { createRoot } from "react-dom/client";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
-import { TooltipProvider } from "./components/ui/tooltip.js";
-import { AppSidebar } from "./components/appsidebar.js";
-import { SidebarInset, SidebarProvider } from "./components/ui/sidebar.js";
-import { SiteHeader } from "./components/sidebar/header.js";
 
 createInertiaApp({
   resolve: (name: string) =>
@@ -14,15 +10,9 @@ createInertiaApp({
     ),
   setup({ el, App, props }) {
     createRoot(el).render(
-      <TooltipProvider>
-        <SidebarProvider defaultOpen>
-          <AppSidebar />
-          <SidebarInset>
-            <SiteHeader />
+      
             <App {...props} />
-          </SidebarInset>
-        </SidebarProvider>
-      </TooltipProvider>,
+          
     );
   },
   progress: {

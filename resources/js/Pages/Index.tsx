@@ -11,6 +11,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { CornerDownLeft, Plus, Search, Trash2 } from "lucide-react";
+import Layout from "@/components/layout";
 
 // Dữ liệu mẫu cho danh sách ghi chú
 const notes = [
@@ -43,5 +44,5 @@ const notes = [
 export default function Dashboard() {
   const [selectedNoteId, setSelectedNoteId] = React.useState(1);
 
-  return <>a</>;
+  return Layout(<>a</>);
 }
