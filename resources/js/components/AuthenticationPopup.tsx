@@ -20,19 +20,21 @@ import { Label } from "./ui/label";
 import { useForm } from "@inertiajs/react";
 import { AlertCircleIcon } from "lucide-react";
 import { Alert, AlertTitle, AlertDescription } from "./ui/alert";
+import { InputField } from "./custom/InputField";
 
 export default function AuthenticationPopup() {
   const [isLogin, toggleIsLogin] = useState(true),
     { data, setData, post, errors, processing } = useForm({
       email: "",
       password: "",
-      confirmPassword: "",
+      password_confirmation: "",
       remember: false,
-      username: "",
+      name: "",
     }),
     submit = (e: SubmitEvent) => {
       e.preventDefault();
-      post("/login");
+
+      post(isLogin ? "/login" : "/register");
     },
     formId = useId(),
     AuthenticationType = (revert = false) =>
@@ -62,59 +64,64 @@ export default function AuthenticationPopup() {
             <form onSubmit={submit} id={formId}>
               <div className="flex flex-col gap-6">
                 {!isLogin && (
-                  <div className="grid gap-2">
-                    <Label htmlFor="username">Username</Label>
-                    <Input
-                      id="username"
-                      value={data.username}
-                      onChange={(e) => setData("username", e.target.value)}
-                      required
-                    />
-                  </div>
-                )}
-                <div className="grid gap-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={data.email}
-                    onChange={(e) => setData("email", e.target.value)}
+                  <InputField
+                    label="Name"
+                    value={data.name}
+                    invalid={errors.name != undefined}
+                    desc={errors.name}
+                    onChange={(e) => setData("name", e.target.value)}
                     required
                   />
-                </div>
-                <div className="grid gap-2">
-                  <div className="flex items-center">
-                    <Label htmlFor="password">Password</Label>
-                    {isLogin && (
+                )}
+                <InputField
+                  label="Email"
+                  type="email"
+                  value={data.email}
+                  invalid={errors.email != undefined}
+                  desc={errors.email}
+                  onChange={(e) => setData("email", e.target.value)}
+                  required
+                />
+                {!isLogin ? (
+                  <InputField
+                    type="password"
+                    label="Password"
+                    value={data.password}
+                    invalid={errors.password != undefined}
+                    desc={errors.password}
+                    onChange={(e) => setData("password", e.target.value)}
+                  />
+                ) : (
+                  <div className="grid gap-2">
+                    <div className="flex items-center">
+                      <Label htmlFor="password">Password</Label>
                       <a
                         href="#"
                         className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
                       >
                         Forgot your password?
                       </a>
-                    )}
-                  </div>
-                  <Input
-                    id="password"
-                    type="password"
-                    required
-                    value={data.password}
-                    onChange={(e) => setData("password", e.target.value)}
-                  />
-                </div>
-                {!isLogin && (
-                  <div className="grid gap-2">
-                    <Label htmlFor="confirmPassword">Confirm password</Label>
+                    </div>
                     <Input
-                      id="confirmPassword"
+                      id="password"
                       type="password"
-                      value={data.confirmPassword}
-                      onChange={(e) =>
-                        setData("confirmPassword", e.target.value)
-                      }
                       required
+                      value={data.password}
+                      aria-invalid={errors.password !== undefined}
+                      onChange={(e) => setData("password", e.target.value)}
                     />
                   </div>
+                )}
+                {!isLogin && (
+                  <InputField
+                    label="Confirm password"
+                    type="password"
+                    value={data.password_confirmation}
+                    onChange={(e) =>
+                      setData("password_confirmation", e.target.value)
+                    }
+                    required
+                  />
                 )}
               </div>
             </form>
@@ -128,7 +135,7 @@ export default function AuthenticationPopup() {
             >
               {AuthenticationType()}
             </Button>
-            {Object.values(errors).some((error) => error) && (
+            {Object.values(errors).some((error) => error) && isLogin && (
               <Alert variant="destructive" className="max-w-md">
                 <AlertCircleIcon />
                 <AlertTitle>Authentication failed</AlertTitle>
