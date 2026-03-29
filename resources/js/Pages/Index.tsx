@@ -1,16 +1,4 @@
 import * as React from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
-import { CornerDownLeft, Plus, Search, Trash2 } from "lucide-react";
 import Layout from "@/components/layout";
 
 // Dữ liệu mẫu cho danh sách ghi chú
