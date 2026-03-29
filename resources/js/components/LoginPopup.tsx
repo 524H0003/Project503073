@@ -1,8 +1,8 @@
+import { SubmitEvent, useId } from "react";
 import {
   AlertDialogTrigger,
   AlertDialogContent,
   AlertDialog,
-  AlertDialogAction,
 } from "./ui/alert-dialog";
 import { Button } from "./ui/button";
 import {
@@ -17,7 +17,20 @@ import {
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
+import { useForm } from "@inertiajs/react";
+
 export default function LoginPopup() {
+  const { data, setData, post, errors, processing } = useForm({
+      email: "",
+      password: "",
+      remember: false,
+    }),
+    submit = (e: SubmitEvent) => {
+      e.preventDefault();
+      post("/login");
+    },
+    formId = useId();
+
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -35,14 +48,15 @@ export default function LoginPopup() {
             </CardAction>
           </CardHeader>
           <CardContent>
-            <form>
+            <form onSubmit={submit} id={formId}>
               <div className="flex flex-col gap-6">
                 <div className="grid gap-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
                     id="email"
                     type="email"
-                    placeholder="m@example.com"
+                    value={data.email}
+                    onChange={(e) => setData("email", e.target.value)}
                     required
                   />
                 </div>
@@ -56,15 +70,26 @@ export default function LoginPopup() {
                       Forgot your password?
                     </a>
                   </div>
-                  <Input id="password" type="password" required />
+                  <Input
+                    id="password"
+                    type="password"
+                    required
+                    value={data.password}
+                    onChange={(e) => setData("password", e.target.value)}
+                  />
                 </div>
               </div>
             </form>
           </CardContent>
           <CardFooter className="flex-col gap-2">
-            <AlertDialogAction type="submit" className="w-full">
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={processing}
+              form={formId}
+            >
               Login
-            </AlertDialogAction>
+            </Button>
           </CardFooter>
         </Card>
       </AlertDialogContent>
