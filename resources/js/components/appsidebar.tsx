@@ -17,8 +17,7 @@ import AuthenticationPopup from "./AuthenticationPopup";
 
 export function AppSidebar() {
   const { auth } = usePage<IPage>().props,
-    { user } = auth,
-    { name, email, avatar } = user;
+    { user } = auth;
 
   return (
     <Sidebar variant="inset">
@@ -54,11 +53,7 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        {user ? (
-          <NavUser user={{ name, email, avatar }} />
-        ) : (
-          <AuthenticationPopup />
-        )}
+        {user ? <NavUser user={user} /> : <AuthenticationPopup />}
       </SidebarFooter>
     </Sidebar>
   );
