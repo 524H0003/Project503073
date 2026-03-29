@@ -13,7 +13,7 @@ import { Input } from "./ui/input";
 
 import { usePage } from "@inertiajs/react";
 import { IPage } from "@/lib/types";
-import LoginPopup from "./LoginPopup";
+import AuthenticationPopup from "./AuthenticationPopup";
 
 export function AppSidebar() {
   const { auth } = usePage<IPage>().props,
@@ -56,7 +56,7 @@ export function AppSidebar() {
         {user ? (
           <NavUser user={{ name: "a", email: "aa", avatar: "" }} />
         ) : (
-          <LoginPopup />
+          <AuthenticationPopup />
         )}
       </SidebarFooter>
     </Sidebar>

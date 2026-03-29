@@ -1,4 +1,4 @@
-import { SubmitEvent, useId } from "react";
+import { SubmitEvent, useId, useState } from "react";
 import {
   AlertDialogTrigger,
   AlertDialogContent,
@@ -21,8 +21,9 @@ import { useForm } from "@inertiajs/react";
 import { AlertCircleIcon } from "lucide-react";
 import { Alert, AlertTitle, AlertDescription } from "./ui/alert";
 
-export default function LoginPopup() {
-  const { data, setData, post, errors, processing } = useForm({
+export default function AuthenticationPopup() {
+  const [isLogin, toggleIsLogin] = useState(true),
+    { data, setData, post, errors, processing } = useForm({
       email: "",
       password: "",
       remember: false,
@@ -31,22 +32,28 @@ export default function LoginPopup() {
       e.preventDefault();
       post("/login");
     },
-    formId = useId();
+    formId = useId(),
+    AuthenticationType = (revert = false) =>
+      isLogin !== revert ? "Login" : "Sign Up";
 
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button>Login</Button>
+        <Button onClick={() => toggleIsLogin(true)}>Login</Button>
       </AlertDialogTrigger>
       <AlertDialogContent asChild>
         <Card className="w-full max-w-sm">
           <CardHeader>
-            <CardTitle>Login to your account</CardTitle>
+            <CardTitle>{AuthenticationType()} to your account</CardTitle>
             <CardDescription>
-              Enter your email below to login to your account
+              {isLogin
+                ? "Enter your email below to login to your account"
+                : "Fill your infomation below to sign up"}
             </CardDescription>
             <CardAction>
-              <Button variant="link">Sign Up</Button>
+              <Button onClick={() => toggleIsLogin(!isLogin)}>
+                {AuthenticationType(true)}
+              </Button>
             </CardAction>
           </CardHeader>
           <CardContent>
@@ -65,12 +72,14 @@ export default function LoginPopup() {
                 <div className="grid gap-2">
                   <div className="flex items-center">
                     <Label htmlFor="password">Password</Label>
-                    <a
-                      href="#"
-                      className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                    >
-                      Forgot your password?
-                    </a>
+                    {isLogin && (
+                      <a
+                        href="#"
+                        className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+                      >
+                        Forgot your password?
+                      </a>
+                    )}
                   </div>
                   <Input
                     id="password"
@@ -90,7 +99,7 @@ export default function LoginPopup() {
               disabled={processing}
               form={formId}
             >
-              Login
+              {AuthenticationType()}
             </Button>
             {Object.values(errors).some((error) => error) && (
               <Alert variant="destructive" className="max-w-md">
