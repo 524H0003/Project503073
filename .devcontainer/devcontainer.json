@@ -7,7 +7,7 @@
 	"features": {
 		"ghcr.io/muhmdraouf/devcontainers-features/alpine-apk:0": {
 			"upgradePackages": true,
-			"packages": "pnpm php composer php-tokenizer php-dom php-session php-xml php-xmlwriter php-fileinfo php-pcntl php-pdo php-pdo_sqlite"
+			"packages": "pnpm php composer php-tokenizer php-dom php-session php-xml php-xmlwriter php-fileinfo php-pcntl php-pdo php-pdo_sqlite php-pecl-xdebug"
 		}
 	},
 	"customizations": {

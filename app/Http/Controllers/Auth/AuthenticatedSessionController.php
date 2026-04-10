@@ -23,7 +23,7 @@ class AuthenticatedSessionController extends Controller
         }
 
         return back()->withErrors([
-            'email' => 'InvalidCredential',
+            'email' => 'Invalid login credential',
         ]);
     }
 
