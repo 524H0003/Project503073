@@ -1,4 +1,4 @@
-import Layout from "@/components/layout";
+import Layout from "@/Layouts/MainLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText } from "lucide-react";
 import CreateNote from "@/components/CreateNoteButton";

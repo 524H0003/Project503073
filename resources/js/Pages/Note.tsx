@@ -1,4 +1,4 @@
-import Layout from "@/components/layout";
+import Layout from "@/Layouts/MainLayout";
 import { Head, router } from "@inertiajs/react";
 import { useEffect, useCallback, useState, ChangeEvent } from "react";
 import { Input } from "@/components/ui/input";
@@ -6,12 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { CloudCheck, CloudOff, Loader2 } from "lucide-react";
 import _ from "lodash";
 import { route } from "ziggy-js";
-
-interface Note {
-  id: number;
-  title: string;
-  content: string;
-}
+import { Note } from "@/types/model";
 
 export default function Edit({ note }: { note: Note }) {
   const [data, setData] = useState(note),
@@ -34,6 +29,7 @@ export default function Edit({ note }: { note: Note }) {
         router.put(route("notes.update", note.id), updatedData, {
           preserveScroll: true,
           preserveState: true,
+          onFinish: () => setProcessing(false),
         });
       } else {
         localStorage.setItem(
@@ -41,9 +37,8 @@ export default function Edit({ note }: { note: Note }) {
           JSON.stringify(updatedData),
         );
         console.log("Đã lưu tạm offline");
+        setProcessing(false);
       }
-
-      setProcessing(false);
     }, 500),
     [note.id],
   );

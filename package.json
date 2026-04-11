@@ -2,10 +2,12 @@
   "private": true,
   "type": "module",
   "scripts": {
+     "typegen": "laravel-typegen",
     "dev": "vite",
     "build": "vite build"
   },
   "devDependencies": {
+    "@7nohe/laravel-typegen": "^0.6.1",
     "@inertiajs/react": "^2.3.18",
     "@tailwindcss/vite": "^4.2.2",
     "@types/lodash": "^4.17.24",
