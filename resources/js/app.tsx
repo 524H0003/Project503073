@@ -6,11 +6,17 @@ const appName = "Efficia Note";
 
 createInertiaApp({
   title: (title) => (title ? `${title} - ${appName}` : appName),
-  resolve: (name: string) =>
-    resolvePageComponent(
-      `./Pages/${name}.tsx`,
-      import.meta.glob("./Pages/**/*.tsx"),
-    ),
+  resolve: async (name: string) => {
+    const pages = import.meta.glob("./Pages/**/*.tsx");
+
+    let path = `./Pages/${name}.tsx`;
+
+    if (!pages[path]) {
+      path = `./Pages/${name}/Index.tsx`;
+    }
+
+    return resolvePageComponent(path, pages);
+  },
   setup({ el, App, props }) {
     createRoot(el).render(<App {...props} />);
   },

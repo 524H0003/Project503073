@@ -10,7 +10,7 @@ export default function MainLayout(children: ReactNode) {
     <TooltipProvider>
       <SidebarProvider defaultOpen>
         <AppSidebar />
-        <SidebarInset>
+        <SidebarInset className="h-dvh min-w-0 overflow-hidden md:h-[calc(100dvh-16px)]">
           <SiteHeader />
           {children}
         </SidebarInset>
