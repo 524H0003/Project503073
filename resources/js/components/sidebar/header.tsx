@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Note } from "@/types/model";
 import { usePage } from "@inertiajs/react";
 import { CloudCheck, CloudOff, Loader2, Share } from "lucide-react";
 import { useNote } from "../context/NoteEdit";
@@ -9,7 +8,6 @@ import { Input } from "../ui/input";
 
 export function SiteHeader() {
   const { url } = usePage(),
-    { note } = usePage<{ note: Note }>().props,
     { processing, data, handleChange } = useNote();
 
   return (

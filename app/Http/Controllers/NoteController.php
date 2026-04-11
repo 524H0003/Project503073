@@ -25,7 +25,7 @@ class NoteController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
+            'title' => 'string|max:255',
         ]);
 
         $note = $request->user()->notes()->create([
@@ -56,8 +56,8 @@ class NoteController extends Controller
         $this->authorize('update', $note);
 
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
+            'title' => 'string|max:255',
+            'content' => 'string',
         ]);
 
         $note->update($validated);

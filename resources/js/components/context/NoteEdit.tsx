@@ -5,12 +5,15 @@ import {
   ReactNode,
   ChangeEvent,
 } from "react";
+import { router } from "@inertiajs/react";
+import { debounce } from "lodash";
+import { useCallback, useEffect } from "react";
+import { route } from "ziggy-js";
 import { Note } from "@/types/model";
 
 interface NoteContextType {
   data: Note;
   processing: boolean;
-  setProcessing: (val: boolean) => void;
   handleChange: <T extends HTMLElement & { value: string }>(
     e: ChangeEvent<T>,
   ) => void;
@@ -25,8 +28,27 @@ export function NoteProvider({
   children: ReactNode;
   initialNote: Note;
 }) {
-  const [data, setData] = useState<Note>(initialNote);
-  const [processing, setProcessing] = useState(false);
+  const [data, setData] = useState<Note>(initialNote),
+    [processing, setProcessing] = useState(false),
+    saveToServer = useCallback(
+      debounce((updatedData) => {
+        if (navigator.onLine) {
+          router.put(route("notes.update", data.id), updatedData, {
+            preserveScroll: true,
+            preserveState: true,
+            onFinish: () => setProcessing(false),
+          });
+        } else {
+          localStorage.setItem(
+            `offline_note_${data.id}`,
+            JSON.stringify(updatedData),
+          );
+          console.log("Đã lưu tạm offline");
+          setProcessing(false);
+        }
+      }, 500),
+      [data.id],
+    );
 
   function handleChange<T extends HTMLElement & { value: string }>(
     e: ChangeEvent<T>,
@@ -39,10 +61,13 @@ export function NoteProvider({
     }));
   }
 
+  useEffect(() => {
+    setProcessing(true);
+    saveToServer(data);
+  }, [data, saveToServer]);
+
   return (
-    <NoteContext.Provider
-      value={{ data, processing, setProcessing, handleChange }}
-    >
+    <NoteContext.Provider value={{ data, processing, handleChange }}>
       {children}
     </NoteContext.Provider>
   );

@@ -1,36 +1,8 @@
 import { useNote } from "@/components/context/NoteEdit";
 import { Textarea } from "@/components/ui/textarea";
-import { router } from "@inertiajs/react";
-import { debounce } from "lodash";
-import { useCallback, useEffect } from "react";
-import { route } from "ziggy-js";
 
 export function Editor() {
-  const { data, setProcessing, handleChange } = useNote(),
-    saveToServer = useCallback(
-      debounce((updatedData) => {
-        if (navigator.onLine) {
-          router.put(route("notes.update", data.id), updatedData, {
-            preserveScroll: true,
-            preserveState: true,
-            onFinish: () => setProcessing(false),
-          });
-        } else {
-          localStorage.setItem(
-            `offline_note_${data.id}`,
-            JSON.stringify(updatedData),
-          );
-          console.log("Đã lưu tạm offline");
-          setProcessing(false);
-        }
-      }, 500),
-      [data.id],
-    );
-
-  useEffect(() => {
-    setProcessing(true);
-    saveToServer(data);
-  }, [data, saveToServer]);
+  const { data, handleChange } = useNote();
 
   return (
     <Textarea
