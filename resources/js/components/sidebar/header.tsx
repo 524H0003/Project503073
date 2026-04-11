@@ -5,11 +5,12 @@ import { Note } from "@/types/model";
 import { usePage } from "@inertiajs/react";
 import { CloudCheck, CloudOff, Loader2, Share } from "lucide-react";
 import { useNote } from "../context/NoteEdit";
+import { Input } from "../ui/input";
 
 export function SiteHeader() {
   const { url } = usePage(),
     { note } = usePage<{ note: Note }>().props,
-    { processing } = useNote();
+    { processing, data, handleChange } = useNote();
 
   return (
     <header className="flex h-10 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-10">
@@ -21,7 +22,13 @@ export function SiteHeader() {
         />
         {url.startsWith("/notes/") && (
           <>
-            <h1 className="text-base font-medium">{note.title}</h1>
+            <Input
+              value={data.title}
+              id="title"
+              onChange={handleChange}
+              placeholder="Tiêu đề..."
+              className="text-base! font-medium w-fit border-none px-0 focus-visible:ring-0 placeholder:text-slate-300"
+            />
             <div className="ml-auto flex items-center gap-2">
               {processing ? (
                 <div className="flex items-center text-blue-500">
