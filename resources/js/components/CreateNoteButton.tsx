@@ -9,28 +9,58 @@ import {
   CardTitle,
 } from "./ui/card";
 import { Loader2, X } from "lucide-react";
-import { SubmitEvent } from "react";
+import { SubmitEvent, useState } from "react";
 import {
   AlertDialog,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogTrigger,
 } from "./ui/alert-dialog";
+import { route } from "ziggy-js";
 
 export default function CreateNote({ className = "" }) {
+  const [open, setOpen] = useState(false);
   const { data, setData, post, processing, reset, errors } = useForm({
     title: "",
   });
 
   const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    post("notes.store", {
-      onSuccess: () => reset(),
+
+    if (!navigator.onLine) {
+      const offlineNote = {
+        id: Date.now(),
+        title: data.title,
+        content: "",
+        is_offline: true,
+        created_at: new Error().stack,
+      };
+
+      const existing = JSON.parse(
+        localStorage.getItem("offline_notes") || "[]",
+      );
+      localStorage.setItem(
+        "offline_notes",
+        JSON.stringify([...existing, offlineNote]),
+      );
+
+      reset();
+      setOpen(false);
+
+      window.dispatchEvent(new Event("storage"));
+      return;
+    }
+
+    post(route("notes.store"), {
+      onSuccess: () => {
+        reset();
+        setOpen(false);
+      },
     });
   };
 
   return (
-    <AlertDialog>
+    <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
         <Button className={className}>Thêm ghi chú</Button>
       </AlertDialogTrigger>

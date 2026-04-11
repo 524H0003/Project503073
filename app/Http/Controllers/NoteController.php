@@ -28,12 +28,12 @@ class NoteController extends Controller
             'title' => 'required|string|max:255',
         ]);
 
-        $request->user()->notes()->create([
+        $note = $request->user()->notes()->create([
             'title' => $validated['title'],
-            'content' => '', // Mặc định để trống như bạn yêu cầu
+            'content' => '',
         ]);
 
-        return back();
+        return redirect()->route('notes.edit', $note->id);
     }
 
     /**
@@ -41,10 +41,9 @@ class NoteController extends Controller
      */
     public function edit(Note $note)
     {
-        // Đảm bảo người dùng chỉ được sửa ghi chú của chính họ
         $this->authorize('update', $note);
 
-        return Inertia::render('Notes/Edit', [
+        return Inertia::render('Note', [
             'note' => $note
         ]);
     }
