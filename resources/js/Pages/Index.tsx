@@ -1,36 +1,33 @@
-import * as React from "react";
 import Layout from "@/components/layout";
-
-// Dữ liệu mẫu cho danh sách ghi chú
-const notes = [
-  {
-    id: 1,
-    title: "Ý tưởng dự án mới",
-    date: "10:30 AM",
-    preview: "Xây dựng ứng dụng ghi chú giống iOS...",
-  },
-  {
-    id: 2,
-    title: "Danh sách mua sắm",
-    date: "Hôm qua",
-    preview: "Sữa, trứng, bánh mì, rau củ...",
-  },
-  {
-    id: 3,
-    title: "Ghi chú cuộc họp",
-    date: "Thứ 2",
-    preview: "Thảo luận về kế hoạch marketing tháng 4...",
-  },
-  {
-    id: 4,
-    title: "Học React & Inertia",
-    date: "2 ngày trước",
-    preview: "Tìm hiểu cách kết nối Laravel và React...",
-  },
-];
+import { Card, CardContent } from "@/components/ui/card";
+import { FileText } from "lucide-react";
+import CreateNote from "@/components/CreateNoteButton";
 
 export default function Dashboard() {
-  const [selectedNoteId, setSelectedNoteId] = React.useState(1);
+  return Layout(
+    <div className="flex h-full w-full items-center justify-center p-8">
+      <Card className="w-full max-w-md border-dashed  border ring-0">
+        <CardContent className="flex flex-col items-center  py-12 text-center">
+          {/* Icon minh họa */}
+          <div className="relative mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-slate-100">
+            <FileText className="h-10 w-10 text-slate-400" />
+          </div>
 
-  return Layout(<>a</>);
+          {/* Nội dung thông báo */}
+          <h3 className="mb-2 text-xl font-semibold text-slate-900">
+            Chưa có ghi chú nào được chọn
+          </h3>
+          <p className="mb-6 text-sm text-slate-500">
+            Hãy chọn một ghi chú từ danh sách bên trái để xem nội dung chi tiết
+            hoặc bắt đầu tạo một ghi chú mới ngay bây giờ.
+          </p>
+
+          {/* Nút hành động nhanh */}
+          <div className="flex gap-3">
+            <CreateNote className="px-6" />
+          </div>
+        </CardContent>
+      </Card>
+    </div>,
+  );
 }

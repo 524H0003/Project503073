@@ -14,6 +14,7 @@ import { Input } from "./ui/input";
 import { usePage } from "@inertiajs/react";
 import { IPage } from "@/lib/types";
 import AuthenticationPopup from "./AuthenticationPopup";
+import CreateNote from "./CreateNoteButton";
 
 export function AppSidebar() {
   const { auth } = usePage<IPage>().props,
@@ -24,7 +25,7 @@ export function AppSidebar() {
       <SidebarHeader>
         <CardTitle>Efficia Note</CardTitle>
         <Input id="search" type="text" placeholder="Search note" />
-        <Button>New</Button>
+        <CreateNote />
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>

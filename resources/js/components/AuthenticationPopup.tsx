@@ -55,7 +55,7 @@ export default function AuthenticationPopup() {
                 : "Fill your infomation below to sign up"}
             </CardDescription>
             <CardAction>
-              <Button onClick={() => toggleIsLogin(!isLogin)}>
+              <Button variant="link" onClick={() => toggleIsLogin(!isLogin)}>
                 {AuthenticationType(true)}
               </Button>
             </CardAction>

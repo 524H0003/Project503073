@@ -26,12 +26,14 @@ class NoteController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'content' => 'required|string',
         ]);
 
-        $request->user()->notes()->create($validated);
+        $request->user()->notes()->create([
+            'title' => $validated['title'],
+            'content' => '', // Mặc định để trống như bạn yêu cầu
+        ]);
 
-        return redirect()->route('notes.index')->with('message', 'Đã tạo ghi chú thành công!');
+        return back();
     }
 
     /**
