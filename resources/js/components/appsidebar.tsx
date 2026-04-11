@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/sidebar";
 import { NavUser } from "./sidebar/user";
 import { CardTitle } from "./ui/card";
-import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 
 import { usePage } from "@inertiajs/react";
@@ -18,14 +17,16 @@ import CreateNote from "./CreateNoteButton";
 
 export function AppSidebar() {
   const { auth } = usePage<IPage>().props,
-    { user } = auth;
+    { user } = auth,
+    { url } = usePage();
 
   return (
     <Sidebar variant="inset">
       <SidebarHeader>
         <CardTitle>Efficia Note</CardTitle>
         <Input id="search" type="text" placeholder="Search note" />
-        <CreateNote />
+
+        {url !== "/" && <CreateNote />}
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>

@@ -5,7 +5,7 @@ interface Note {
     id: number;
     title: string;
     content: string;
-    is_offline?: boolean; // Đánh dấu ghi chú chưa được sync
+    is_offline?: boolean;
 }
 
 interface Props {
