@@ -1,8 +1,11 @@
 import { useNote } from "@/components/context/NoteEdit";
 import { Textarea } from "@/components/ui/textarea";
+import { Note } from "@/types/model";
 
-export function Editor() {
-  const { data, handleChange } = useNote();
+export function Editor({ note }: { note: Note }) {
+  const { data, handleChange, setData } = useNote();
+
+  setData(note);
 
   return (
     <Textarea

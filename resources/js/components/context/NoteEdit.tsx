@@ -2,8 +2,8 @@ import {
   createContext,
   useContext,
   useState,
-  ReactNode,
   ChangeEvent,
+  PropsWithChildren,
 } from "react";
 import { router } from "@inertiajs/react";
 import { debounce } from "lodash";
@@ -14,6 +14,7 @@ import { Note } from "@/types/model";
 interface NoteContextType {
   data: Note;
   processing: boolean;
+  setData: (input: Note) => void;
   handleChange: <T extends HTMLElement & { value: string }>(
     e: ChangeEvent<T>,
   ) => void;
@@ -21,14 +22,8 @@ interface NoteContextType {
 
 const NoteContext = createContext<NoteContextType | undefined>(undefined);
 
-export function NoteProvider({
-  children,
-  initialNote,
-}: {
-  children: ReactNode;
-  initialNote: Note;
-}) {
-  const [data, setData] = useState<Note>(initialNote),
+export function NoteProvider({ children }: PropsWithChildren) {
+  const [data, setData] = useState<Note>(null!),
     [processing, setProcessing] = useState(false),
     saveToServer = useCallback(
       debounce((updatedData) => {
@@ -47,7 +42,7 @@ export function NoteProvider({
           setProcessing(false);
         }
       }, 500),
-      [data.id],
+      [data],
     );
 
   function handleChange<T extends HTMLElement & { value: string }>(
@@ -67,7 +62,7 @@ export function NoteProvider({
   }, [data, saveToServer]);
 
   return (
-    <NoteContext.Provider value={{ data, processing, handleChange }}>
+    <NoteContext.Provider value={{ data, setData, processing, handleChange }}>
       {children}
     </NoteContext.Provider>
   );

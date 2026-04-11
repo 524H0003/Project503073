@@ -14,9 +14,7 @@ class NoteController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Notes/Index', [
-            'notes' => Auth::user()->notes()->latest()->get()
-        ]);
+        return back();
     }
 
     /**
@@ -26,14 +24,17 @@ class NoteController extends Controller
     {
         $validated = $request->validate([
             'title' => 'string|max:255',
+            'content' => 'string'
         ]);
 
         $note = $request->user()->notes()->create([
             'title' => $validated['title'],
-            'content' => '',
+            'content' => $validated['string'],
         ]);
 
-        return redirect()->route('notes.edit', $note->id);
+       return Inertia::render('Note', [
+            'note' => $note
+        ]);
     }
 
     /**
