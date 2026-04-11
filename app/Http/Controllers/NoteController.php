@@ -62,7 +62,7 @@ class NoteController extends Controller
 
         $note->update($validated);
 
-        return redirect()->route('notes.index')->with('message', 'Đã cập nhật ghi chú!');
+        return back();
     }
 
     /**
