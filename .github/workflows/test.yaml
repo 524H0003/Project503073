@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-  
   pull_request:
     branches:
       - main
@@ -21,12 +20,25 @@ jobs:
       pull-requests: write
       id-token: write
     runs-on: ubuntu-latest
+    
     steps:          
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@v6
+      # --- PHẦN 1: THIẾT LẬP PHP & COMPOSER ---
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3' # Thay đổi version phù hợp với dự án của bạn
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, bcmath, dom, curl
+          coverage: none
+
+      - name: Install Composer Dependencies
+        run: composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+      # --- PHẦN 2: THIẾT LẬP NODE (Cho Vite/Mix) ---
+      - uses: actions/setup-node@v4
         with:
           node-version: latest
 
@@ -42,5 +54,5 @@ jobs:
       - name: Format code
         run: pnpm format
 
-      - name: Build application
+      - name: Build Assets (Vite)
         run: pnpm build
