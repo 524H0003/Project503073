@@ -11,23 +11,24 @@ use Illuminate\Validation\Rules;
 
 class RegisteredUserController extends Controller
 {
-    // Xử lý lưu User
-    public function store(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+	// Xử lý lưu User
+	public function store(Request $request)
+	{
+		$request->validate([
+			"name" => "required|string|max:255",
+			"email" =>
+				"required|string|lowercase|email|max:255|unique:" . User::class,
+			"password" => ["required", "confirmed", Rules\Password::defaults()],
+		]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+		$user = User::create([
+			"name" => $request->name,
+			"email" => $request->email,
+			"password" => Hash::make($request->password),
+		]);
 
-        Auth::login($user);
+		Auth::login($user);
 
-        return redirect('/');
-    }
+		return redirect("/");
+	}
 }
