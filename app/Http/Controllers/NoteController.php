@@ -12,7 +12,9 @@ class NoteController extends Controller
 	/**
 	 * Hiển thị danh sách ghi chú của người dùng
 	 */
-	public function index() {}
+	public function index() {
+		return redirect("/");
+	}
 
 	/**
 	 * Lưu ghi chú mới vào database
