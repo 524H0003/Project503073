@@ -25,6 +25,7 @@ import {
 	SidebarMenuItem,
 	useSidebar,
 } from "@/components/ui/sidebar";
+import { route } from "ziggy-js";
 
 export function NavUser({
 	user,
@@ -92,7 +93,7 @@ export function NavUser({
             <DropdownMenuSeparator /> */}
 						<DropdownMenuItem asChild>
 							<Link
-								href={"logout"}
+								href={route('logout')}
 								method="post"
 								as="button"
 								className="w-full"

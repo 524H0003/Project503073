@@ -40,6 +40,9 @@ class HandleInertiaRequests extends Middleware
 			"auth" => [
 				"user" => $request->user(),
 			],
+			"notes" => $request->user()
+				? $request->user()->notes()->orderBy("updated_at", "desc")->get()
+				: [],
 		];
 	}
 }

@@ -5,18 +5,22 @@ import {
 	SidebarGroup,
 	SidebarHeader,
 	SidebarMenu,
+	SidebarMenuButton,
+	SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { NavUser } from "./sidebar/user";
 import { CardTitle } from "./ui/card";
 import { Input } from "./ui/input";
 
-import { usePage } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 import { IPage } from "@/lib/types";
 import AuthenticationPopup from "./AuthenticationPopup";
 import CreateNote from "./CreateNoteButton";
+import { Note } from "@/types/model";
+import { route } from "ziggy-js";
 
 export function AppSidebar() {
-	const { auth } = usePage<IPage>().props,
+	const { auth, notes } = usePage<IPage>().props,
 		{ user } = auth,
 		{ url } = usePage();
 
@@ -31,26 +35,26 @@ export function AppSidebar() {
 			<SidebarContent>
 				<SidebarGroup>
 					<SidebarMenu>
-						{/* {data.navMain.map((item) => (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton asChild>
-                  <a href={item.url} className="font-medium">
-                    {item.title}
-                  </a>
-                </SidebarMenuButton>
-                {item.items?.length ? (
-                  <SidebarMenuSub>
-                    {item.items.map((item) => (
-                      <SidebarMenuSubItem key={item.title}>
-                        <SidebarMenuSubButton asChild isActive={item.isActive}>
-                          <a href={item.url}>{item.title}</a>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                    ))}
-                  </SidebarMenuSub>
-                ) : null}
-              </SidebarMenuItem>
-            ))} */}
+						{notes.map((note: Note) => (
+							<SidebarMenuItem key={note.id}>
+								<SidebarMenuButton
+									asChild
+									isActive={url === `/notes/${note.id}/edit`}
+								>
+									<Link
+										href={route("notes.edit", note.id)}
+										className="flex flex-col items-start gap-1 py-2 h-auto"
+									>
+										<span className="font-medium line-clamp-1 w-full text-sm">
+											{note.title || "Ghi chú không tiêu đề"}
+										</span>
+										<span className="text-xs text-muted-foreground line-clamp-1">
+											{note.content || "Chưa có nội dung"}
+										</span>
+									</Link>
+								</SidebarMenuButton>
+							</SidebarMenuItem>
+						))}
 					</SidebarMenu>
 				</SidebarGroup>
 			</SidebarContent>
