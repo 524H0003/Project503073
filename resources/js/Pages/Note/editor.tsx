@@ -1,19 +1,16 @@
 import { useNote } from "@/components/context/NoteEdit";
 import { Textarea } from "@/components/ui/textarea";
-import { Note } from "@/types/model";
 
-export function Editor({ note }: { note: Note }) {
-  const { data, handleChange, setData } = useNote();
+export function Editor() {
+	const { data, handleChange } = useNote();
 
-  setData(note);
-
-  return (
-    <Textarea
-      value={data.content}
-      id="content"
-      onChange={handleChange}
-      placeholder="Nội dung ghi chú..."
-      className="h-full p-2! border-none px-0 focus-visible:ring-0 resize-none text-lg whitespace-pre placeholder:text-slate-300"
-    />
-  );
+	return (
+		<Textarea
+			value={data.content}
+			id="content"
+			onChange={handleChange}
+			placeholder="Nội dung ghi chú..."
+			className="h-full p-2! border-none px-0 focus-visible:ring-0 resize-none text-lg whitespace-pre placeholder:text-slate-300"
+		/>
+	);
 }

@@ -5,30 +5,30 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    public function up(): void
-    {
-        // 1. Bảng Users
-        Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->string('password');
-            $table->rememberToken();
-            $table->timestamps();
-        });
+	public function up(): void
+	{
+		// 1. Bảng Users
+		Schema::create("users", function (Blueprint $table) {
+			$table->id();
+			$table->string("name");
+			$table->string("email")->unique();
+			$table->string("password");
+			$table->rememberToken();
+			$table->timestamps();
+		});
 
-        // 2. Bảng Password Reset
-        Schema::create('password_reset_tokens', function (Blueprint $table) {
-            $table->string('email')->primary();
-            $table->string('token');
-            $table->timestamp('created_at')->nullable();
-        });
-    }
+		// 2. Bảng Password Reset
+		Schema::create("password_reset_tokens", function (Blueprint $table) {
+			$table->string("email")->primary();
+			$table->string("token");
+			$table->timestamp("created_at")->nullable();
+		});
+	}
 
-    public function down(): void
-    {
-        Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
-        Schema::dropIfExists('sessions');
-    }
+	public function down(): void
+	{
+		Schema::dropIfExists("users");
+		Schema::dropIfExists("password_reset_tokens");
+		Schema::dropIfExists("sessions");
+	}
 };

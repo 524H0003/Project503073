@@ -1,12 +1,12 @@
 {
-    "files.exclude": {
-        "**/.git": true,
-        "**/.svn": true,
-        "**/.hg": true,
-        "**/.DS_Store": true,
-        "**/Thumbs.db": true,
-        "vendor": true,
-        "storage": true
-    },
-    "explorerExclude.backup": {}
+	"files.exclude": {
+		"**/.git": true,
+		"**/.svn": true,
+		"**/.hg": true,
+		"**/.DS_Store": true,
+		"**/Thumbs.db": true,
+		"vendor": true,
+		"storage": true
+	},
+	"explorerExclude.backup": {}
 }

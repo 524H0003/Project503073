@@ -9,72 +9,73 @@ use Illuminate\Http\Request;
 
 class NoteController extends Controller
 {
-    /**
-     * Hiển thị danh sách ghi chú của người dùng
-     */
-    public function index()
-    {
-        return back();
-    }
+	/**
+	 * Hiển thị danh sách ghi chú của người dùng
+	 */
+	public function index() {}
 
-    /**
-     * Lưu ghi chú mới vào database
-     */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'title' => 'string|max:255',
-            'content' => 'string'
-        ]);
+	/**
+	 * Lưu ghi chú mới vào database
+	 */
+	public function store(Request $request)
+	{
+		$validated = $request->validate([
+			"title" => "string|max:255",
+		]);
 
-        $note = $request->user()->notes()->create([
-            'title' => $validated['title'],
-            'content' => $validated['string'],
-        ]);
+		$note = $request
+			->user()
+			->notes()
+			->create([
+				"title" => $validated["title"],
+				"content" => "",
+			]);
 
-       return Inertia::render('Note', [
-            'note' => $note
-        ]);
-    }
+		return redirect()->route("notes.edit", $note->id);
+	}
 
-    /**
-     * Hiển thị form chỉnh sửa (Inertia page)
-     */
-    public function edit(Note $note)
-    {
-        $this->authorize('update', $note);
+	/**
+	 * Hiển thị form chỉnh sửa (Inertia page)
+	 */
+	public function edit(Note $note)
+	{
+		$this->authorize("update", $note);
 
-        return Inertia::render('Note', [
-            'note' => $note
-        ]);
-    }
+		return Inertia::render("Note", [
+			"note" => $note,
+		]);
+	}
 
-    /**
-     * Cập nhật ghi chú
-     */
-    public function update(Request $request, Note $note)
-    {
-        $this->authorize('update', $note);
+	/**
+	 * Cập nhật ghi chú
+	 */
+	public function update(Request $request, Note $note)
+	{
+		$this->authorize("update", $note);
 
-        $validated = $request->validate([
-            'title' => 'string|max:255',
-            'content' => 'string',
-        ]);
+		$validated = $request->validate([
+			"title" => "nullable|string|max:255",
+			"content" => "nullable|string",
+		]);
 
-        $note->update($validated);
+		$note->fill($validated);
 
-        return back();
-    }
+		if ($note->isDirty()) {
+			$note->save();
+		}
 
-    /**
-     * Xóa ghi chú
-     */
-    public function destroy(Note $note)
-    {
-        $this->authorize('delete', $note);
+		return back();
+	}
 
-        $note->delete();
+	/**
+	 * Xóa ghi chú
+	 */
+	public function destroy(Note $note)
+	{
+		$this->authorize("delete", $note);
 
-        return back(200);
-    }
+		$note->delete();
+
+		return back(200);
+	}
 }
