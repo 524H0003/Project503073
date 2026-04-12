@@ -61,7 +61,10 @@ class NoteController extends Controller
 		$note->fill($validated);
 
 		if ($note->isDirty()) {
-			$note->save();
+			$note->update([
+				"title" => $validated["title"] ?? "",
+				"content" => $validated["content"] ?? "",
+			]);
 		}
 
 		return back();
