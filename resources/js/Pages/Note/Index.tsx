@@ -7,7 +7,7 @@ export default function Edit({ note }: { note: Note }) {
 	return (
 		<>
 			<Head title={note.title} />
-			{Layout(<Editor note={note} />)}
+			{Layout(<Editor />)}
 		</>
 	);
 }
