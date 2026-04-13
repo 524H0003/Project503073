@@ -7,6 +7,7 @@ import {
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
+	useSidebar,
 } from "@/components/ui/sidebar";
 import { NavUser } from "./sidebar/user";
 import { CardTitle } from "./ui/card";

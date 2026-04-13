@@ -1,22 +1,11 @@
-import {
-	BadgeCheck,
-	Bell,
-	ChevronsUpDown,
-	CreditCard,
-	LogOut,
-	Sparkles,
-	User,
-} from "lucide-react";
+import { ChevronsUpDown, LogOut, User as UserIcon } from "lucide-react";
 
 import { Link } from "@inertiajs/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
-	DropdownMenuGroup,
 	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -26,28 +15,29 @@ import {
 	useSidebar,
 } from "@/components/ui/sidebar";
 import { route } from "ziggy-js";
+import { User } from "@/types/model";
 
 export function NavUser({
 	user,
+	className,
+	alwaysTop = false,
 }: {
-	user: {
-		name: string;
-		email: string;
-		avatar: string;
-	};
+	user: User;
+	className?: string;
+	alwaysTop?: boolean;
 }) {
 	const { isMobile } = useSidebar(),
 		AvatarHolder = () => (
 			<Avatar className="h-8 w-8 rounded-lg">
-				<AvatarImage src={user.avatar} alt={user.name} />
+				{/* <AvatarImage src={user.avatar || ""} alt={user.name} /> */}
 				<AvatarFallback className="rounded-lg">
-					<User></User>
+					<UserIcon></UserIcon>
 				</AvatarFallback>
 			</Avatar>
 		);
 
 	return (
-		<SidebarMenu>
+		<SidebarMenu className={className}>
 			<SidebarMenuItem>
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
@@ -65,7 +55,7 @@ export function NavUser({
 					</DropdownMenuTrigger>
 					<DropdownMenuContent
 						className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-						side={isMobile ? "bottom" : "right"}
+						side={alwaysTop ? "top" : isMobile ? "bottom" : "right"}
 						align="end"
 						sideOffset={4}
 					>
@@ -93,7 +83,7 @@ export function NavUser({
             <DropdownMenuSeparator /> */}
 						<DropdownMenuItem asChild>
 							<Link
-								href={route('logout')}
+								href={route("logout")}
 								method="post"
 								as="button"
 								className="w-full"
