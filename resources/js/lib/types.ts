@@ -1,14 +1,8 @@
-import { Note } from "@/types/model";
-
-export interface IUser {
-	name: string;
-	email: string;
-	avatar: string;
-}
+import { Note, User } from "@/types/model";
 
 export interface IPage {
 	auth: {
-		user: IUser;
+		user: User;
 	};
 	notes: Note[];
 	[key: string]: any;

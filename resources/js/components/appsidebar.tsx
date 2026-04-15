@@ -14,7 +14,6 @@ import { Input } from "./ui/input";
 
 import { Link, usePage } from "@inertiajs/react";
 import { IPage } from "@/lib/types";
-import AuthenticationPopup from "./AuthenticationPopup";
 import CreateNote from "./CreateNoteButton";
 import { Note } from "@/types/model";
 import { route } from "ziggy-js";
@@ -58,9 +57,7 @@ export function AppSidebar() {
 					</SidebarMenu>
 				</SidebarGroup>
 			</SidebarContent>
-			<SidebarFooter>
-				{user ? <NavUser user={user} /> : <AuthenticationPopup />}
-			</SidebarFooter>
+			<SidebarFooter>{user && <NavUser user={user} />}</SidebarFooter>
 		</Sidebar>
 	);
 }

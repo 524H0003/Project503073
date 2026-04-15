@@ -1,10 +1,16 @@
+import { AlertCircleIcon } from "lucide-react";
+import { Alert, AlertTitle, AlertDescription } from "./ui/alert";
+import { InputField } from "./custom/InputField";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+
 import { SubmitEvent, useId, useState } from "react";
-import {
-	AlertDialogTrigger,
-	AlertDialogContent,
-	AlertDialog,
-} from "./ui/alert-dialog";
+import { useForm } from "@inertiajs/react";
 import { Button } from "./ui/button";
+import {
+	AlertDialog,
+	AlertDialogContent,
+} from "./ui/alert-dialog";
 import {
 	Card,
 	CardHeader,
@@ -14,15 +20,8 @@ import {
 	CardContent,
 	CardFooter,
 } from "./ui/card";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
 
-import { useForm } from "@inertiajs/react";
-import { AlertCircleIcon } from "lucide-react";
-import { Alert, AlertTitle, AlertDescription } from "./ui/alert";
-import { InputField } from "./custom/InputField";
-
-export default function AuthenticationPopup() {
+export default function AuthenticationCard() {
 	const [isLogin, toggleIsLogin] = useState(true),
 		{ data, setData, post, errors, processing } = useForm({
 			email: "",
@@ -39,13 +38,9 @@ export default function AuthenticationPopup() {
 		formId = useId(),
 		AuthenticationType = (revert = false) =>
 			isLogin !== revert ? "Login" : "Sign Up";
-
 	return (
-		<AlertDialog>
-			<AlertDialogTrigger asChild>
-				<Button onClick={() => toggleIsLogin(true)}>Login</Button>
-			</AlertDialogTrigger>
-			<AlertDialogContent asChild>
+		<AlertDialog open>
+			<AlertDialogContent onEscapeKeyDown={(e) => e.preventDefault()} asChild>
 				<Card className="w-full max-w-sm">
 					<CardHeader>
 						<CardTitle>{AuthenticationType()} to your account</CardTitle>
