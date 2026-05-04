@@ -5,6 +5,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\NoteController;
+use App\Http\Controllers\ImageController;
 
 Route::get("/", function () {
 	return Inertia::render("Index");
@@ -23,5 +24,9 @@ Route::middleware("guest")->group(function () {
 });
 
 Route::middleware(["auth", "verified"])->group(function () {
+	Route::post("/notes/upload-image", [ImageController::class, "upload"])->name(
+		"notes.upload-image",
+	);
+
 	Route::resource("notes", NoteController::class);
 });

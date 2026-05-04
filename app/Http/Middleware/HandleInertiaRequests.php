@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -41,7 +42,14 @@ class HandleInertiaRequests extends Middleware
 				"user" => $request->user(),
 			],
 			"notes" => $request->user()
-				? $request->user()->notes()->orderBy("updated_at", "desc")->get()
+				? $request->user()->notes()->orderBy("updated_at", "desc")->get()->map(
+					fn($note) => [
+						"id" => $note->id,
+						"title" => $note->title,
+						"content" => Str::limit(strip_tags($note->content), 32),
+						"updated_at" => $note->updated_at,
+					],
+				)
 				: [],
 		];
 	}

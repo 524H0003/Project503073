@@ -49,6 +49,11 @@ class NoteController extends Controller
 		]);
 	}
 
+	public function show(Note $note)
+	{
+		return redirect()->route("notes.edit", $note->id);
+	}
+
 	/**
 	 * Cập nhật ghi chú
 	 */
