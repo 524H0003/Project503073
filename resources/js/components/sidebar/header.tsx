@@ -1,10 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { usePage } from "@inertiajs/react";
-import { CloudCheck, CloudOff, Loader2, Share } from "lucide-react";
+import { router, usePage } from "@inertiajs/react";
+import { CloudCheck, CloudOff, Loader2, Share, Trash } from "lucide-react";
 import { useNote } from "../context/NoteEdit";
 import { Input } from "../ui/input";
+import { route } from "ziggy-js";
 
 export function SiteHeader() {
 	const { url } = usePage(),
@@ -43,6 +44,14 @@ export function SiteHeader() {
 							)}
 							<Button size="sm" className="hidden sm:flex">
 								<Share />
+							</Button>
+							<Button
+								size="sm"
+								variant="destructive"
+								onClick={() => router.delete(route("notes.destroy", data.id))}
+								className="hidden sm:flex"
+							>
+								<Trash />
 							</Button>
 						</div>
 					</>

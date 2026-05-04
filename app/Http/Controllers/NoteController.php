@@ -12,7 +12,8 @@ class NoteController extends Controller
 	/**
 	 * Hiển thị danh sách ghi chú của người dùng
 	 */
-	public function index() {
+	public function index()
+	{
 		return redirect("/");
 	}
 
@@ -81,6 +82,6 @@ class NoteController extends Controller
 
 		$note->delete();
 
-		return back(200);
+		return redirect("/");
 	}
 }
