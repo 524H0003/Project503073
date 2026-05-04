@@ -14,7 +14,6 @@ import { Note } from "@/types/model";
 interface NoteContextType {
 	data: Note;
 	processing: boolean;
-	// setData: (input: SetStateAction<Note>) => void;
 	handleChange: <T extends HTMLElement & { value: string }>(
 		e: ChangeEvent<T>,
 	) => void;
@@ -24,7 +23,9 @@ interface NoteContextType {
 const NoteContext = createContext<NoteContextType>(null!);
 
 export function NoteProvider({ children }: PropsWithChildren) {
-	const { note } = usePage<{ note: Note }>().props;
+	const { url } = usePage(),
+		noteId = Number(url.split("/")[2]),
+		{ note } = usePage<{ note: Note }>().props;
 
 	const [data, setData] = useState<Note>(note || {}),
 		[processing, setProcessing] = useState(false),
@@ -33,7 +34,7 @@ export function NoteProvider({ children }: PropsWithChildren) {
 				if (!data.id) return;
 
 				if (navigator.onLine) {
-					router.put(route("notes.update", data.id), updatedData, {
+					router.put(route("notes.update", updatedData.id), updatedData, {
 						preserveScroll: true,
 						preserveState: true,
 						onFinish: () => setProcessing(false),
@@ -65,6 +66,8 @@ export function NoteProvider({ children }: PropsWithChildren) {
 		setProcessing(true);
 		saveToServer(data);
 	}, [data.title, data.content, saveToServer]);
+
+	useEffect(() => setData(note), [noteId]);
 
 	return (
 		<NoteContext.Provider value={{ data, processing, handleChange, setData }}>

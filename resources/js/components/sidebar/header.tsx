@@ -9,7 +9,7 @@ import { route } from "ziggy-js";
 
 export function SiteHeader() {
 	const { url } = usePage(),
-		{ processing, data, handleChange } = useNote();
+		{ data, processing, handleChange } = useNote();
 
 	return (
 		<header className="flex h-10 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-10">
