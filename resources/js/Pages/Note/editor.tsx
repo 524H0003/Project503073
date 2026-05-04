@@ -6,6 +6,7 @@ import { BoldIcon, Heading1Icon, ImagePlus, ItalicIcon } from "lucide-react";
 import Image from "@tiptap/extension-image";
 import { uploadImage } from "@/lib/utils";
 import { Head } from "@inertiajs/react";
+import { ResizableImage } from "tiptap-extension-resizable-image";
 
 export function Editor() {
 	const { data, setData } = useNote();
@@ -13,10 +14,11 @@ export function Editor() {
 	const editor = useEditor({
 		extensions: [
 			StarterKit,
-			Image.configure({
-				inline: true,
-				allowBase64: true,
+			ResizableImage.configure({
+				defaultWidth: 200,
+				defaultHeight: 200,
 			}),
+			Image.configure({ inline: true }),
 		],
 		editorProps: {
 			attributes: {
