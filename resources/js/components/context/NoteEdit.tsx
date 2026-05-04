@@ -18,6 +18,7 @@ interface NoteContextType {
 	handleChange: <T extends HTMLElement & { value: string }>(
 		e: ChangeEvent<T>,
 	) => void;
+	setData: React.Dispatch<React.SetStateAction<Note>>;
 }
 
 const NoteContext = createContext<NoteContextType>(null!);
@@ -66,7 +67,7 @@ export function NoteProvider({ children }: PropsWithChildren) {
 	}, [data.title, data.content, saveToServer]);
 
 	return (
-		<NoteContext.Provider value={{ data, processing, handleChange }}>
+		<NoteContext.Provider value={{ data, processing, handleChange, setData }}>
 			{children}
 		</NoteContext.Provider>
 	);

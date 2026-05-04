@@ -15,7 +15,8 @@
 			"extensions": [
 				"PeterSchmalfeldt.explorer-exclude",
 				"esbenp.prettier-vscode",
-				"xdebug.php-debug"
+				"xdebug.php-debug",
+				"bradlc.vscode-tailwindcss"
 			]
 		}
 	},
