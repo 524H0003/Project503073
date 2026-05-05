@@ -1,0 +1,38 @@
+# --- Dependencies ---
+node_modules
+vendor
+!vendor/tightenco/ziggy
+public/hot
+public/storage
+public/build
+
+# --- Laravel Runtime (Không cần copy logs/cache cũ vào) ---
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/logs/*
+!storage/framework/.gitignore
+
+# --- Environment & Secrets (Không copy file .env thực tế) ---
+.env
+.env.*.local
+! .env.example
+
+# --- Git ---
+.git
+.gitignore
+
+# --- IDE & System ---
+.vscode
+.idea
+.docker
+.DS_Store
+Thumbs.db
+docker-compose.yml
+Dockerfile
+
+# --- Tests & Documentation ---
+tests
+*.md
+phpstan.neon
+phpunit.xml

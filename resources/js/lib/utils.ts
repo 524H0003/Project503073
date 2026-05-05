@@ -7,7 +7,7 @@ export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
 }
 
-export async function uploadImage(file: Blob): Promise<string | null> {
+export async function uploadImage(file: Blob, noteId: string): Promise<string | null> {
 	const formData = new FormData();
 	formData.append("image", file);
 
@@ -18,7 +18,7 @@ export async function uploadImage(file: Blob): Promise<string | null> {
 		return null;
 	}
 
-	const response = await axios.post(route("notes.upload-image"), formData, {
+	const response = await axios.post(route("notes.upload-image", noteId), formData, {
 		headers: {
 			"Content-Type": "multipart/form-data",
 		},
