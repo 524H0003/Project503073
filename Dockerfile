@@ -53,6 +53,10 @@ RUN chmod -R 775 /var/www/storage /var/www/bootstrap/cache \
 
 EXPOSE 80
 
-ENV DB_CONNECTION sqlite
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+ENTRYPOINT ["entrypoint.sh"]
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
