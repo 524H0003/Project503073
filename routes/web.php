@@ -24,9 +24,10 @@ Route::middleware("guest")->group(function () {
 });
 
 Route::middleware(["auth", "verified"])->group(function () {
-	Route::post("/notes/{noteId}/image", [ImageController::class, "upload"])->name(
-		"notes.upload-image",
-	);
+	Route::post("/notes/{noteId}/image", [
+		ImageController::class,
+		"upload",
+	])->name("notes.upload-image");
 
 	Route::get("/notes/{noteId}/image/{filename}", [
 		ImageController::class,

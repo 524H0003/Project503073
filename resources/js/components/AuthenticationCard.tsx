@@ -7,10 +7,7 @@ import { Label } from "./ui/label";
 import { SubmitEvent, useId, useState } from "react";
 import { useForm } from "@inertiajs/react";
 import { Button } from "./ui/button";
-import {
-	AlertDialog,
-	AlertDialogContent,
-} from "./ui/alert-dialog";
+import { AlertDialog, AlertDialogContent } from "./ui/alert-dialog";
 import {
 	Card,
 	CardHeader,
