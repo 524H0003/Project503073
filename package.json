@@ -1,5 +1,6 @@
 {
 	"private": true,
+	"name": "project503073",
 	"type": "module",
 	"scripts": {
 		"typegen": "laravel-typegen",
