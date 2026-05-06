@@ -1,7 +1,6 @@
 # --- Dependencies ---
 node_modules
 vendor
-!vendor/tightenco/ziggy
 public/hot
 public/storage
 public/build

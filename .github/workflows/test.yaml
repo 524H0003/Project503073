@@ -1,4 +1,4 @@
-name: Release package
+name: Test package
 
 on:
   pull_request:
@@ -10,7 +10,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  release:
+  test:
     permissions:
       contents: write
       issues: write
