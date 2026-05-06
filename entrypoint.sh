@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
 # 1. Kiểm tra file .env, nếu chưa có thì tạo từ .env.example
