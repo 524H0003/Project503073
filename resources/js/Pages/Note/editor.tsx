@@ -47,7 +47,7 @@ export function Editor() {
 				return;
 			}
 
-			const result = await uploadImage(file);
+			const result = await uploadImage(file, data.id.toString());
 
 			if (result == null) return;
 

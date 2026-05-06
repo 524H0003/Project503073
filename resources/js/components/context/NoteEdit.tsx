@@ -65,7 +65,7 @@ export function NoteProvider({ children }: PropsWithChildren) {
 	useEffect(() => {
 		setProcessing(true);
 		saveToServer(data);
-	}, [data.title, data.content, saveToServer]);
+	}, [data?.title, data?.content, saveToServer]);
 
 	useEffect(() => setData(note), [noteId]);
 
