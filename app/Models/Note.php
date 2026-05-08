@@ -46,4 +46,21 @@ class Note extends Model
 			});
 		});
 	}
+
+	public function labels(): BelongsToMany
+	{
+		return $this->belongsToMany(Label::class);
+	}
+
+	public function setLabels(Note $note, Request $request)
+	{
+		// Lọc danh sách ID gửi lên, chỉ giữ lại những ID thực sự thuộc về user này
+		$validLabelIds = auth()
+			->user()
+			->labels()
+			->whereIn("id", $request->label_ids)
+			->pluck("id");
+
+		$note->labels()->sync($validLabelIds);
+	}
 }
