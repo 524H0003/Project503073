@@ -46,8 +46,7 @@ jobs:
           cache: true
 
       - name: Update dependencies
-        continue-on-error: true
-        run: pnpm update
+        run: pnpm update --no-frozen-lockfile --aggregate-output --ignore-scripts=false
 
       - name: Format code
         run: pnpm format
