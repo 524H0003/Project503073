@@ -33,4 +33,17 @@ class Note extends Model
 	{
 		return Attribute::make(set: fn(?boolval $value) => $value ?? false);
 	}
+
+	public function scopeSearch($query, ?string $search)
+	{
+		return $query->when($search, function ($query, $search) {
+			$query->where(function ($q) use ($search) {
+				$q->where("title", "like", "%{$search}%")->orWhere(
+					"content",
+					"like",
+					"%{$search}%",
+				);
+			});
+		});
+	}
 }
