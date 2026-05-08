@@ -42,12 +42,13 @@ class HandleInertiaRequests extends Middleware
 				"user" => $request->user(),
 			],
 			"notes" => $request->user()
-				? $request->user()->notes()->orderBy("updated_at", "desc")->get()->map(
+				? $request->user()->notes()->ordered()->get()->map(
 					fn($note) => [
 						"id" => $note->id,
 						"title" => $note->title,
 						"content" => Str::limit(strip_tags($note->content), 32),
 						"updated_at" => $note->updated_at,
+						"is_pinned" => $note->is_pinned,
 					],
 				)
 				: [],

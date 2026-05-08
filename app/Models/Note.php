@@ -7,7 +7,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Note extends Model
 {
-	protected $fillable = ["user_id", "title", "content"];
+	protected $fillable = ["user_id", "title", "content", "is_pinned"];
+
+	public function scopeOrdered($query)
+	{
+		return $query->orderByDesc("is_pinned")->orderByDesc("updated_at");
+	}
 
 	public function user(): BelongsTo
 	{
@@ -22,5 +27,10 @@ class Note extends Model
 	protected function title(): Attribute
 	{
 		return Attribute::make(set: fn(?string $value) => $value ?? "");
+	}
+
+	protected function is_pinned(): Attribute
+	{
+		return Attribute::make(set: fn(?boolval $value) => $value ?? false);
 	}
 }

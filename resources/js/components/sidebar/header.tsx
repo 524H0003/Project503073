@@ -2,7 +2,14 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { router, usePage } from "@inertiajs/react";
-import { CloudCheck, CloudOff, Loader2, Share, Trash } from "lucide-react";
+import {
+	CloudCheck,
+	CloudOff,
+	Loader2,
+	PinIcon,
+	Share,
+	Trash,
+} from "lucide-react";
 import { useNote } from "../context/NoteEdit";
 import { Input } from "../ui/input";
 import { route } from "ziggy-js";
@@ -44,6 +51,14 @@ export function SiteHeader() {
 							)}
 							<Button size="sm" className="hidden sm:flex">
 								<Share />
+							</Button>
+							<Button
+								size="sm"
+								variant="secondary"
+								onClick={() => router.patch(route("notes.togglePin", data.id))}
+								className="hidden sm:flex"
+							>
+								<PinIcon />
 							</Button>
 							<Button
 								size="sm"

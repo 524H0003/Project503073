@@ -17,6 +17,7 @@ import { IPage } from "@/lib/types";
 import CreateNote from "./CreateNoteButton";
 import { Note } from "@/types/model";
 import { route } from "ziggy-js";
+import { PinIcon } from "lucide-react";
 
 export function AppSidebar() {
 	const { auth, notes } = usePage<IPage>().props,
@@ -42,14 +43,23 @@ export function AppSidebar() {
 								>
 									<Link
 										href={route("notes.edit", note.id)}
-										className="flex flex-col items-start gap-1 py-2 h-auto"
+										className="flex items-center gap-1 py-2 h-auto"
 									>
-										<span className="font-medium line-clamp-1 w-full text-sm">
-											{note.title || "Ghi chú không tiêu đề"}
-										</span>
-										<span className="text-xs text-muted-foreground line-clamp-1">
-											{note.content || "Chưa có nội dung"}
-										</span>
+										<PinIcon
+											className={`w-4 h-4 transition-transform ${
+												note.is_pinned
+													? "fill-current rotate-45 text-yellow-400"
+													: "hidden"
+											}`}
+										/>
+										<div>
+											<span className="font-medium line-clamp-1 w-full text-sm">
+												{note.title || "Ghi chú không tiêu đề"}
+											</span>
+											<span className="text-xs text-muted-foreground line-clamp-1">
+												{note.content || "Chưa có nội dung"}
+											</span>
+										</div>
 									</Link>
 								</SidebarMenuButton>
 							</SidebarMenuItem>
