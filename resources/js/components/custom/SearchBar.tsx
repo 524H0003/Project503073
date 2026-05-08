@@ -1,7 +1,7 @@
 import { IPage } from "@/lib/types";
 import { router, usePage } from "@inertiajs/react";
 import { Input } from "../ui/input";
-import { ChangeEvent, useCallback, useState } from "react";
+import { ChangeEvent, SubmitEvent, useCallback, useState } from "react";
 import { debounce } from "lodash";
 import { cn } from "@/lib/utils";
 import { Plus } from "lucide-react"; // Import icon
@@ -67,7 +67,7 @@ export function SearchBar({ className = "" }) {
 	};
 
 	// Hàm gửi tạo Label mới
-	const createLabel = (e: React.FormEvent) => {
+	const createLabel = (e: SubmitEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		if (!newLabelName.trim()) return;
 
@@ -75,7 +75,6 @@ export function SearchBar({ className = "" }) {
 			route("labels.store"),
 			{
 				name: newLabelName,
-				color: "#6366f1", // Màu mặc định hoặc bạn thêm input chọn màu
 			},
 			{
 				onSuccess: () => {
@@ -100,8 +99,8 @@ export function SearchBar({ className = "" }) {
 				{/* Nút thêm Label mới */}
 				<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
 					<DialogTrigger asChild>
-						<button className="flex items-center justify-center w-7 h-7 rounded-full border border-dashed border-gray-400 hover:border-gray-600 hover:bg-gray-50 transition-all">
-							<Plus className="w-4 h-4 text-gray-500" />
+						<button className="flex items-center justify-center size-5 rounded-full border border-dashed border-gray-400 hover:border-gray-600 hover:bg-gray-50 transition-all">
+							<Plus className="size-2 text-gray-500" />
 						</button>
 					</DialogTrigger>
 					<DialogContent className="sm:max-w-106.25">
