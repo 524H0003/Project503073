@@ -11,7 +11,7 @@ class User extends Authenticatable
 {
 	use HasApiTokens, Notifiable;
 
-	protected $fillable = ["name", "email", "password"];
+	protected $fillable = ["name", "email", "password", "labels"];
 
 	protected $hidden = ["password", "remember_token"];
 
@@ -23,4 +23,9 @@ class User extends Authenticatable
 	{
 		return $this->hasMany(Note::class);
 	}
+
+	public function labels(): HasMany
+{
+    return $this->hasMany(Label::class);
+}
 }

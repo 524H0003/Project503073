@@ -55,10 +55,14 @@ class HandleInertiaRequests extends Middleware
 							"content" => Str::limit(strip_tags($note->content), 32),
 							"updated_at" => $note->updated_at,
 							"is_pinned" => $note->is_pinned,
+							"labels" => $note->labels,
 						],
 					)
 				: [],
 			"filters" => $request->only(["search"]),
+			"labels" => fn() => $request->user()
+				? $request->user()->labels()->select("labels.id", "labels.name")->get()
+				: [],
 		];
 	}
 }
