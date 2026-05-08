@@ -46,6 +46,7 @@ jobs:
           cache: true
 
       - name: Update dependencies
+        continue-on-error: true
         run: pnpm update
 
       - name: Format code
