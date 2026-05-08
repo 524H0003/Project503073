@@ -10,14 +10,17 @@ import { debounce } from "lodash";
 import { useCallback, useEffect } from "react";
 import { route } from "ziggy-js";
 import { Note } from "@/types/model";
+import { IPage } from "@/lib/types";
+
+export type NoteForm = Omit<Note, "labels"> & { labels: string[] };
 
 interface NoteContextType {
-	data: Note;
+	data: NoteForm;
 	processing: boolean;
 	handleChange: <T extends HTMLElement & { value: string }>(
 		e: ChangeEvent<T>,
 	) => void;
-	setData: React.Dispatch<React.SetStateAction<Note>>;
+	setData: React.Dispatch<React.SetStateAction<NoteForm>>;
 }
 
 const NoteContext = createContext<NoteContextType>(null!);
@@ -25,9 +28,12 @@ const NoteContext = createContext<NoteContextType>(null!);
 export function NoteProvider({ children }: PropsWithChildren) {
 	const { url } = usePage(),
 		noteId = Number(url.split("/")[2]),
-		{ note } = usePage<{ note: Note }>().props;
+		{ note, labels } = usePage<{ note: Note } & IPage>().props;
 
-	const [data, setData] = useState<Note>(note || {}),
+	const [data, setData] = useState<NoteForm>({
+			...note,
+			labels: note.labels!.map((l) => l.id.toString()),
+		}),
 		[processing, setProcessing] = useState(false),
 		saveToServer = useCallback(
 			debounce((updatedData) => {
@@ -65,12 +71,23 @@ export function NoteProvider({ children }: PropsWithChildren) {
 	useEffect(() => {
 		setProcessing(true);
 		saveToServer(data);
-	}, [data?.title, data?.content, saveToServer]);
+	}, [data?.title, data?.content, data?.labels, saveToServer]);
 
-	useEffect(() => setData(note), [noteId]);
+	useEffect(
+		() =>
+			setData({ ...note, labels: note.labels!.map((l) => l.id.toString()) }),
+		[noteId],
+	);
 
 	return (
-		<NoteContext.Provider value={{ data, processing, handleChange, setData }}>
+		<NoteContext.Provider
+			value={{
+				data,
+				processing,
+				handleChange,
+				setData,
+			}}
+		>
 			{children}
 		</NoteContext.Provider>
 	);

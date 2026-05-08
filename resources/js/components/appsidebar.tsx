@@ -20,7 +20,7 @@ import { PinIcon } from "lucide-react";
 import { SearchBar } from "./custom/SearchBar";
 
 export function AppSidebar() {
-	const { auth, notes, filters } = usePage<IPage>().props,
+	const { auth, notes } = usePage<IPage>().props,
 		{ user } = auth,
 		{ url } = usePage();
 

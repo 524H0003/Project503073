@@ -44,5 +44,5 @@ Route::middleware(["auth", "verified"])->group(function () {
 		"togglePin",
 	])->name("notes.togglePin");
 
-	Route::resource('labels', LabelController::class);
+	Route::resource("labels", LabelController::class);
 });
