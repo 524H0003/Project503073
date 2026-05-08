@@ -6,4 +6,7 @@ export interface IPage {
 	};
 	notes: Note[];
 	[key: string]: any;
+	filters: {
+		search: string;
+	};
 }
