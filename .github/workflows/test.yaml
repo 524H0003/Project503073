@@ -53,3 +53,9 @@ jobs:
 
       - name: Build Assets (Vite)
         run: pnpm build
+      
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
