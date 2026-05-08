@@ -44,6 +44,8 @@ class NoteController extends Controller
 	{
 		$this->authorize("update", $note);
 
+		$note->load("labels:id,name");
+
 		return Inertia::render("Note", [
 			"note" => $note,
 		]);
@@ -64,16 +66,26 @@ class NoteController extends Controller
 		$validated = $request->validate([
 			"title" => "nullable|string|max:255",
 			"content" => "nullable|string",
+			"labels" => "nullable|array",
+			"labels.*" => "exists:labels,id",
 		]);
 
-		$note->fill($validated);
+		$note->update([
+			"title" => $validated["title"] ?? "",
+			"content" => $validated["content"] ?? "",
+		]);
 
-		if ($note->isDirty()) {
-			$note->update([
-				"title" => $validated["title"] ?? "",
-				"content" => $validated["content"] ?? "",
-			]);
+		if ($request->has("labels")) {
+			$validIds = auth()
+				->user()
+				->labels()
+				->whereIn("labels.id", $request->labels)
+				->pluck("id");
+
+			$note->labels()->sync($validIds);
 		}
+
+		$note->load("labels:id,name");
 
 		return back();
 	}
@@ -87,7 +99,7 @@ class NoteController extends Controller
 
 		$note->delete();
 
-		return redirect("/");
+		return redirect()->route("notes.index");
 	}
 
 	public function togglePin(Note $note)

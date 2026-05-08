@@ -16,7 +16,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /app
 COPY . .
 
-RUN npm install -g pnpm \
+RUN npm install -g pnpm@10.9.0 \
     && pnpm install --frozen-lockfile \
     && composer install --no-dev --no-interaction --prefer-dist \
         --optimize-autoloader --no-scripts 

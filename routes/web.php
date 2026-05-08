@@ -5,6 +5,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\NoteController;
+use App\Http\Controllers\LabelController;
 use App\Http\Controllers\ImageController;
 
 Route::get("/", function () {
@@ -42,4 +43,6 @@ Route::middleware(["auth", "verified"])->group(function () {
 		NoteController::class,
 		"togglePin",
 	])->name("notes.togglePin");
+
+	Route::resource("labels", LabelController::class);
 });
