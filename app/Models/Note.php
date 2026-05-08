@@ -29,7 +29,8 @@ class Note extends Model
 		return Attribute::make(set: fn(?string $value) => $value ?? "");
 	}
 
-	protected $casts = [
-		"is_pinned" => "boolean",
-	];
+	protected function is_pinned(): Attribute
+	{
+		return Attribute::make(set: fn(?boolval $value) => $value ?? false);
+	}
 }
