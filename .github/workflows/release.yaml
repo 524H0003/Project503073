@@ -60,6 +60,9 @@ jobs:
 
       - name: Update dependencies
         run: pnpm update
+        env:
+          # Cho phép tất cả các package chạy build scripts
+          PNPM_CONFIG_ONLY_ALLOW_BUILT_DEPENDENCIES: ""
 
       - name: Generate types
         run: pnpm typegen
