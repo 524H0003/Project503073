@@ -37,4 +37,9 @@ Route::middleware(["auth", "verified"])->group(function () {
 		->middleware("auth");
 
 	Route::resource("notes", NoteController::class);
+
+	Route::patch("/notes/{note}/toggle-pin", [
+		NoteController::class,
+		"togglePin",
+	])->name("notes.togglePin");
 });

@@ -1,6 +1,9 @@
 #!/bin/sh
 set -e
 
+echo "Running migrations..."
+php artisan migrate --force
+
 # 1. Kiểm tra file .env, nếu chưa có thì tạo từ .env.example
 if [ ! -f .env ]; then
     cp .env.example .env
