@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Label;
 
 class LabelController extends Controller
 {
@@ -58,15 +59,24 @@ class LabelController extends Controller
 	/**
 	 * Update the specified resource in storage.
 	 */
-	public function update(Request $request, string $id)
+	public function update(Request $request, Label $label)
 	{
-		//
+		$this->authorize("update", $label); // Đảm bảo đúng chủ sở hữu
+
+		$validated = $request->validate([
+			"name" => "required|string|max:50",
+			"color" => "required|string|max:7",
+		]);
+
+		$label->update($validated);
+
+		return back();
 	}
 
 	/**
 	 * Remove the specified resource from storage.
 	 */
-	public function destroy(string $id)
+	public function destroy(Label $label)
 	{
 		if ($label->user_id !== auth()->id()) {
 			abort(403);
