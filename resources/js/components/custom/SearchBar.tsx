@@ -50,13 +50,17 @@ export function SearchBar({ className = "" }) {
 
 	const toggleLabel = (labelId: number) => {
 		const idStr = String(labelId);
-		let newLabels = selectedLabels.includes(idStr)
+
+		const newLabels = selectedLabels.includes(idStr)
 			? selectedLabels.filter((id) => id !== idStr)
 			: [...selectedLabels, idStr];
 
 		router.get(
 			window.location.pathname,
-			{ ...filters, labels: newLabels },
+			{
+				...filters,
+				labels: newLabels.length > 0 ? newLabels : null,
+			},
 			{
 				preserveState: true,
 				preserveScroll: true,
@@ -128,14 +132,11 @@ export function SearchBar({ className = "" }) {
 						<button
 							key={label.id}
 							onClick={() => toggleLabel(label.id)}
-							// style={{
-							// 	borderColor: label.color,
-							// 	backgroundColor: isActive ? label.color : "transparent",
-							// 	color: isActive ? "white" : label.color,
-							// }}
 							className={cn(
-								"px-3 py-1 text-xs rounded-full border transition-all",
-								isActive ? "shadow-md" : "opacity-70 hover:opacity-100",
+								"px-3 py-1 text-xs rounded-full border transition-all duration-200",
+								isActive
+									? "bg-primary text-primary-foreground border-primary shadow-sm scale-105" // Trạng thái đang chọn
+									: "bg-background text-muted-foreground border-input hover:border-gray-400 opacity-80", // Trạng thái chờ
 							)}
 						>
 							{label.name}
