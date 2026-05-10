@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Label;
+use Illuminate\Validation\Rule;
 
 class LabelController extends Controller
 {
@@ -61,12 +62,25 @@ class LabelController extends Controller
 	 */
 	public function update(Request $request, Label $label)
 	{
-		$this->authorize("update", $label); // Đảm bảo đúng chủ sở hữu
+		if ($label->user_id !== auth()->id()) {
+			abort(403);
+		}
 
-		$validated = $request->validate([
-			"name" => "required|string|max:50",
-			"color" => "required|string|max:7",
-		]);
+		$validated = $request->validate(
+			[
+				"name" => [
+					"required",
+					"string",
+					"max:50",
+					Rule::unique("labels", "name")
+						->where("user_id", auth()->id())
+						->ignore($label->id),
+				],
+			],
+			[
+				"name.unique" => "Bạn đã có một nhãn với tên này rồi!",
+			],
+		);
 
 		$label->update($validated);
 
