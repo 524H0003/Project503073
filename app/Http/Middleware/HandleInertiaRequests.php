@@ -47,6 +47,8 @@ class HandleInertiaRequests extends Middleware
 					->notes()
 					->ordered()
 					->search($request->input("search"))
+					->filterByLabels($request->input("labels"))
+					->with('labels')
 					->get()
 					->map(
 						fn($note) => [
