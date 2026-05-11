@@ -1,9 +1,6 @@
-name: Release package
+name: Test package
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
@@ -13,7 +10,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  release:
+  test:
     permissions:
       contents: write
       issues: write
@@ -44,7 +41,7 @@ jobs:
 
       - uses: pnpm/action-setup@v3
         with:
-          version: latest
+          version: 10.9.0
           run_install: false
           cache: true
 
@@ -56,3 +53,9 @@ jobs:
 
       - name: Build Assets (Vite)
         run: pnpm build
+      
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false

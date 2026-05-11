@@ -12,7 +12,8 @@ class NoteController extends Controller
 	/**
 	 * Hiển thị danh sách ghi chú của người dùng
 	 */
-	public function index() {
+	public function index()
+	{
 		return redirect("/");
 	}
 
@@ -21,15 +22,11 @@ class NoteController extends Controller
 	 */
 	public function store(Request $request)
 	{
-		$validated = $request->validate([
-			"title" => "string|max:255",
-		]);
-
 		$note = $request
 			->user()
 			->notes()
 			->create([
-				"title" => $validated["title"],
+				"title" => "",
 				"content" => "",
 			]);
 
@@ -43,9 +40,16 @@ class NoteController extends Controller
 	{
 		$this->authorize("update", $note);
 
+		$note->load("labels:id,name");
+
 		return Inertia::render("Note", [
 			"note" => $note,
 		]);
+	}
+
+	public function show(Note $note)
+	{
+		return redirect()->route("notes.edit", $note->id);
 	}
 
 	/**
@@ -58,16 +62,26 @@ class NoteController extends Controller
 		$validated = $request->validate([
 			"title" => "nullable|string|max:255",
 			"content" => "nullable|string",
+			"labels" => "nullable|array",
+			"labels.*" => "exists:labels,id",
 		]);
 
-		$note->fill($validated);
+		$note->update([
+			"title" => $validated["title"] ?? "",
+			"content" => $validated["content"] ?? "",
+		]);
 
-		if ($note->isDirty()) {
-			$note->update([
-				"title" => $validated["title"] ?? "",
-				"content" => $validated["content"] ?? "",
-			]);
+		if ($request->has("labels")) {
+			$validIds = auth()
+				->user()
+				->labels()
+				->whereIn("labels.id", $request->labels)
+				->pluck("id");
+
+			$note->labels()->sync($validIds);
 		}
+
+		$note->load("labels:id,name");
 
 		return back();
 	}
@@ -81,6 +95,17 @@ class NoteController extends Controller
 
 		$note->delete();
 
-		return back(200);
+		return redirect()->route("notes.index");
+	}
+
+	public function togglePin(Note $note)
+	{
+		$this->authorize("update", $note);
+
+		$note->update([
+			"is_pinned" => !$note->is_pinned,
+		]);
+
+		return back();
 	}
 }

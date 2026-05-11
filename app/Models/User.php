@@ -15,7 +15,7 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $fillable = [
         "name", 
         "email", 
-        "password", 
+        "password", "labels", 
         "avatar", 
         "preferences"
     ];
@@ -35,4 +35,9 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Note::class);
     }
+
+	public function labels(): HasMany
+	{
+		return $this->hasMany(Label::class);
+	}
 }

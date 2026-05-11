@@ -5,6 +5,8 @@ use Inertia\Inertia;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\NoteController;
+use App\Http\Controllers\LabelController;
+use App\Http\Controllers\ImageController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
@@ -44,8 +46,27 @@ Route::middleware("guest")->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
+	Route::post("/notes/{noteId}/image", [
+		ImageController::class,
+		"upload",
+	])->name("notes.upload-image");
+
+	Route::get("/notes/{noteId}/image/{filename}", [
+		ImageController::class,
+		"serveImage",
+	])
+		->name("notes.image")
+		->middleware("auth");
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 	Route::put('/password', [ProfileController::class, 'updatePassword'])->name('password.update');
 	Route::put('/profile/preferences', [ProfileController::class, 'updatePreferences'])->name('profile.preferences');
+
+	Route::patch("/notes/{note}/toggle-pin", [
+		NoteController::class,
+		"togglePin",
+	])->name("notes.togglePin");
+
+	Route::resource("labels", LabelController::class);
 });
