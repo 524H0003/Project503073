@@ -34,14 +34,12 @@ class HandleInertiaRequests extends Middleware
 	 *
 	 * @return array<string, mixed>
 	 */
-public function share(Request $request): array
-{
-    $user = $request->user();
-
-    return [
-        ...parent::share($request),
-        "auth" => [
-            "user" => $user ? [
+	public function share(Request $request): array
+	{
+		return [
+			...parent::share($request),
+			"auth" => [
+				"user" => $user ? [
                 "id" => $user->id,
                 "name" => $user->name,
                 "email" => $user->email,
@@ -52,18 +50,6 @@ public function share(Request $request): array
                     "font_size" => "medium"
                 ],
             ] : null,
-        ],
-        "notes" => $user
-            ? $user->notes()->orderBy("updated_at", "desc")->get()
-            : [],
-    ];
-}
-	public function share(Request $request): array
-	{
-		return [
-			...parent::share($request),
-			"auth" => [
-				"user" => $request->user(),
 			],
 			"notes" => $request->user()
 				? $request
