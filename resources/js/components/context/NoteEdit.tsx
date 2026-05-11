@@ -28,11 +28,11 @@ const NoteContext = createContext<NoteContextType>(null!);
 export function NoteProvider({ children }: PropsWithChildren) {
 	const { url } = usePage(),
 		noteId = Number(url.split("/")[2]),
-		{ note, labels } = usePage<{ note: Note } & IPage>().props;
+		{ note, } = usePage<{ note: Note } & IPage>().props;
 
 	const [data, setData] = useState<NoteForm>({
 			...note,
-			labels: note.labels!.map((l) => l.id.toString()),
+			labels: note?.labels!.map((l) => l.id.toString()),
 		}),
 		[processing, setProcessing] = useState(false),
 		saveToServer = useCallback(
@@ -75,7 +75,7 @@ export function NoteProvider({ children }: PropsWithChildren) {
 
 	useEffect(
 		() =>
-			setData({ ...note, labels: note.labels!.map((l) => l.id.toString()) }),
+			setData({ ...note, labels: note?.labels!.map((l) => l.id.toString()) }),
 		[noteId],
 	);
 

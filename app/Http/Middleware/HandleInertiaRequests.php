@@ -47,6 +47,8 @@ class HandleInertiaRequests extends Middleware
 					->notes()
 					->ordered()
 					->search($request->input("search"))
+					->filterByLabels($request->input("labels"))
+					->with('labels')
 					->get()
 					->map(
 						fn($note) => [
@@ -59,7 +61,7 @@ class HandleInertiaRequests extends Middleware
 						],
 					)
 				: [],
-			"filters" => $request->only(["search"]),
+			"filters" => $request->only(["search", "labels"]),
 			"labels" => fn() => $request->user()
 				? $request->user()->labels()->select("labels.id", "labels.name")->get()
 				: [],

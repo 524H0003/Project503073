@@ -64,4 +64,17 @@ class Note extends Model
 
 		$note->labels()->sync($validLabelIds);
 	}
+
+	public function scopeFilterByLabels($query, $labelIds)
+	{
+		if (!$labelIds) {
+			return $query;
+		}
+
+		$ids = is_array($labelIds) ? $labelIds : [$labelIds];
+
+		return $query->whereHas("labels", function ($q) use ($ids) {
+			$q->whereIn("labels.id", $ids);
+		});
+	}
 }

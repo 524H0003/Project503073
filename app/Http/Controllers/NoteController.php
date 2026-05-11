@@ -22,15 +22,11 @@ class NoteController extends Controller
 	 */
 	public function store(Request $request)
 	{
-		$validated = $request->validate([
-			"title" => "string|max:255",
-		]);
-
 		$note = $request
 			->user()
 			->notes()
 			->create([
-				"title" => $validated["title"],
+				"title" => "",
 				"content" => "",
 			]);
 
