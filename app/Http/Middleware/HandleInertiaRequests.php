@@ -79,6 +79,7 @@ class HandleInertiaRequests extends Middleware
 			"labels" => fn() => $request->user()
 				? $request->user()->labels()->select("labels.id", "labels.name")->get()
 				: [],
+			"status" => session("status"),
 		];
 	}
 }

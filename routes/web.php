@@ -14,7 +14,7 @@ use App\Http\Controllers\ProfileController;
 
 Route::get("/", function () {
 	return Inertia::render("Index");
-});
+})->name('index');
 
 Route::post("/login", [AuthenticatedSessionController::class, "store"])->name(
 	"login",
