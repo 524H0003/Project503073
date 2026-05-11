@@ -141,14 +141,6 @@ export function SiteHeader() {
 							</Button>
 							<Button
 								size="sm"
-								variant="secondary"
-								onClick={() => router.patch(route("notes.togglePin", data.id))}
-								className="hidden sm:flex"
-							>
-								<PinIcon />
-							</Button>
-							<Button
-								size="sm"
 								variant="destructive"
 								onClick={() => router.delete(route("notes.destroy", data.id))}
 								className="hidden sm:flex"
