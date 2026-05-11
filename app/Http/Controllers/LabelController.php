@@ -42,8 +42,7 @@ class LabelController extends Controller
 				"color" => "nullable|string|max:7",
 			],
 			[
-				"name.unique" =>
-					"Label exist. Please create with another label name.",
+				"name.unique" => "Label exist. Please create with another label name.",
 			],
 		);
 

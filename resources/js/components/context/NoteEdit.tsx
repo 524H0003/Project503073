@@ -28,7 +28,7 @@ const NoteContext = createContext<NoteContextType>(null!);
 export function NoteProvider({ children }: PropsWithChildren) {
 	const { url } = usePage(),
 		noteId = Number(url.split("/")[2]),
-		{ note, } = usePage<{ note: Note } & IPage>().props;
+		{ note } = usePage<{ note: Note } & IPage>().props;
 
 	const [data, setData] = useState<NoteForm>({
 			...note,
