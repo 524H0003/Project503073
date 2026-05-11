@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/sidebar";
 import { NavUser } from "./sidebar/user";
 import { CardTitle } from "./ui/card";
-import { Input } from "./ui/input";
 
 import { Link, usePage } from "@inertiajs/react";
 import { IPage } from "@/lib/types";
@@ -18,6 +17,7 @@ import CreateNote from "./CreateNoteButton";
 import { Note } from "@/types/model";
 import { route } from "ziggy-js";
 import { PinIcon } from "lucide-react";
+import { SearchBar } from "./custom/SearchBar";
 
 export function AppSidebar() {
 	const { auth, notes } = usePage<IPage>().props,
@@ -28,7 +28,7 @@ export function AppSidebar() {
 		<Sidebar variant="inset">
 			<SidebarHeader>
 				<CardTitle>Efficia Note</CardTitle>
-				<Input id="search" type="text" placeholder="Search note" />
+				<SearchBar />
 
 				{url !== "/" && <CreateNote />}
 			</SidebarHeader>

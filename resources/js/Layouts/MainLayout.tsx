@@ -14,7 +14,10 @@ export default function MainLayout(children: ReactNode) {
 	return (
 		<TooltipProvider>
 			<NoteProvider>
-				<SidebarProvider open={url !== "/" && open} onOpenChange={setOpen}>
+				<SidebarProvider
+					open={window.location.pathname !== "/" && open}
+					onOpenChange={setOpen}
+				>
 					<AppSidebar />
 					<SidebarInset className="h-dvh min-w-0 overflow-hidden md:h-[calc(100dvh-16px)] flex flex-col">
 						{url !== "/" && <SiteHeader />}

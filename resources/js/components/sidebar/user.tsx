@@ -1,11 +1,18 @@
-import { ChevronsUpDown, LogOut, User as UserIcon } from "lucide-react";
+import {
+	ChevronsUpDown,
+	LogOut,
+	TagIcon,
+	User as UserIcon,
+} from "lucide-react";
 
 import { Link } from "@inertiajs/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
+	DropdownMenuGroup,
 	DropdownMenuItem,
+	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -16,6 +23,7 @@ import {
 } from "@/components/ui/sidebar";
 import { route } from "ziggy-js";
 import { User } from "@/types/model";
+import { LabelManagement } from "../LabelManager";
 
 export function NavUser({
 	user,
@@ -59,28 +67,12 @@ export function NavUser({
 						align="end"
 						sideOffset={4}
 					>
-						{/* <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Sparkles />
-                Upgrade to Pro
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCard />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell />
-                Notifications
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator /> */}
+						<DropdownMenuGroup>
+							<DropdownMenuItem asChild>
+								<LabelManagement />
+							</DropdownMenuItem>
+						</DropdownMenuGroup>
+						<DropdownMenuSeparator />
 						<DropdownMenuItem asChild>
 							<Link
 								href={route("logout")}
