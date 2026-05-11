@@ -29,16 +29,27 @@ class LabelController extends Controller
 	 */
 	public function store(Request $request)
 	{
-		$request->merge(["user_id" => auth()->id()]);
-
-		$validated = $request->validate([
-			"name" => "required|string|max:50",
-			// "color" => "nullable|string|max:7",
-		]);
+		$validated = $request->validate(
+			[
+				"name" => [
+					"required",
+					"string",
+					"max:50",
+					Rule::unique("labels", "name")->where(
+						fn($query) => $query->where("user_id", auth()->id()),
+					),
+				],
+				"color" => "nullable|string|max:7",
+			],
+			[
+				"name.unique" =>
+					"Label exist. Please create with another label name.",
+			],
+		);
 
 		auth()->user()->labels()->create($validated);
 
-		return back()->with("message", "Đã tạo nhãn thành công!");
+		return back();
 	}
 
 	/**

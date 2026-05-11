@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { SubmitEvent, useState } from "react";
 import { router, usePage } from "@inertiajs/react";
 import {
 	Dialog,
@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Trash2, Check, TagIcon } from "lucide-react";
 import { route } from "ziggy-js";
+import { CreateLabel } from "./custom/CreateLabel";
 
 export function LabelManagement() {
 	const { labels } = usePage<any>().props;
@@ -40,12 +41,13 @@ export function LabelManagement() {
 		<Dialog>
 			<DialogTrigger className="flex w-full items-center gap-2 px-2 py-1.5 text-sm hover:bg-accent rounded-sm">
 				<TagIcon className="h-4 w-4" />
-				<span>Quản lý nhãn</span>
+				<span>Label Management</span>
 			</DialogTrigger>
 			<DialogContent className="max-w-md">
 				<DialogHeader>
-					<DialogTitle>Tất cả nhãn</DialogTitle>
+					<DialogTitle>All Labels</DialogTitle>
 				</DialogHeader>
+				<CreateLabel></CreateLabel>
 				<div className="space-y-3 mt-4 max-h-[60vh] overflow-y-auto pr-2">
 					{labels.map((label: any) => (
 						<div key={label.id} className="flex items-center gap-2 group">
