@@ -51,7 +51,7 @@ class NewPasswordController extends Controller
 
         // Nếu thành công, chuyển hướng về trang Login
         if ($status == Password::PASSWORD_RESET) {
-            return redirect()->route('login')->with('status', __($status));
+            return redirect()->route('index')->with('status', __($status));
         }
 
         // Nếu thất bại, quay lại với lỗi

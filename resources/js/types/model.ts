@@ -24,6 +24,8 @@ export type User = {
     email: string;
     created_at?: string;
     updated_at?: string;
+    preferences?: string;
+    email_verified_at?: string;
     notes?: Note[];
     labels?: Label[];
 };
