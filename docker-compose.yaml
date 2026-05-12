@@ -14,7 +14,6 @@ services:
 
       # Cấu hình Database (Dùng SQLite)
       - DB_CONNECTION=sqlite
-      - DB_DATABASE=/var/www/html/database/database.sqlite
 
       # CẤU HÌNH SMTP EMAIL (Thay đổi các giá trị dưới đây)
       - MAIL_MAILER=smtp
@@ -23,7 +22,5 @@ services:
       - MAIL_USERNAME=vietuk.nguyen@gmail.com
       - MAIL_PASSWORD=tcod hvvf lmjb cuvl
       - MAIL_ENCRYPTION=tls
-      - MAIL_FROM_ADDRESS="${MAIL_USERNAME}"
-      - MAIL_FROM_NAME="${APP_NAME}"
 
     restart: unless-stopped
