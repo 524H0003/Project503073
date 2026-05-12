@@ -1,15 +1,44 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 
 import { TooltipProvider } from "@/components/ui/tooltip.js";
 import { AppSidebar } from "@/components/appsidebar.js";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar.js";
 import { SiteHeader } from "@/components/sidebar/header.js";
 import { NoteProvider } from "@/components/context/NoteEdit";
-import { usePage } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
+import { Toaster } from "@/components/ui/sonner";
+import { IPage } from "@/lib/types";
+import { toast } from "sonner";
+import { MailWarning } from "lucide-react";
+import { route } from "ziggy-js";
 
 export default function MainLayout(children: ReactNode) {
-	const { url } = usePage(),
+	const { url, props } = usePage<IPage>(),
 		[open, setOpen] = useState(true);
+
+	const user = props.auth.user;
+
+	useEffect(() => {
+		if (user && !user.email_verified_at) {
+			toast.error("Tài khoản chưa xác thực", {
+				description: "Vui lòng xác nhận email để sử dụng đầy đủ tính năng.",
+				duration: Infinity,
+				icon: <MailWarning className="h-5 w-5 text-destructive" />,
+				action: {
+					label: "Gửi lại mã",
+					onClick: () => {
+						router.post(
+							route("verification.send"),
+							{},
+							{
+								onSuccess: () => toast.success("Đã gửi lại link xác nhận!"),
+							},
+						);
+					},
+				},
+			});
+		}
+	}, [user]);
 
 	return (
 		<TooltipProvider>
@@ -22,6 +51,7 @@ export default function MainLayout(children: ReactNode) {
 					<SidebarInset className="h-dvh min-w-0 overflow-hidden md:h-[calc(100dvh-16px)] flex flex-col">
 						{url !== "/" && <SiteHeader />}
 						<div className="block flex-1 overflow-auto">{children}</div>
+						<Toaster closeButton richColors />
 					</SidebarInset>
 				</SidebarProvider>
 			</NoteProvider>
