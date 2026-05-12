@@ -71,6 +71,16 @@ export function NavUser({
 							<DropdownMenuItem asChild>
 								<LabelManagement />
 							</DropdownMenuItem>
+
+							<DropdownMenuItem asChild>
+								<Link
+									href={route("profile.edit")}
+									as="button"
+									className="w-full"
+								>
+									<UserIcon /> Manage Profile{" "}
+								</Link>
+							</DropdownMenuItem>
 						</DropdownMenuGroup>
 						<DropdownMenuSeparator />
 						<DropdownMenuItem asChild>

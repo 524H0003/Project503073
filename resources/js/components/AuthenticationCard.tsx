@@ -17,6 +17,7 @@ import {
 	CardContent,
 	CardFooter,
 } from "./ui/card";
+import { route } from "ziggy-js";
 
 export default function AuthenticationCard() {
 	const [isLogin, toggleIsLogin] = useState(true),
@@ -88,7 +89,7 @@ export default function AuthenticationCard() {
 										<div className="flex items-center">
 											<Label htmlFor="password">Password</Label>
 											<a
-												href="#"
+												href={route("password.request")}
 												className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
 											>
 												Forgot your password?
