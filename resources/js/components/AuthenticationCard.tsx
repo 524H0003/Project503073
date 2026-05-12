@@ -89,7 +89,7 @@ export default function AuthenticationCard() {
 										<div className="flex items-center">
 											<Label htmlFor="password">Password</Label>
 											<a
-												href={route('password.request')}
+												href={route("password.request")}
 												className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
 											>
 												Forgot your password?
