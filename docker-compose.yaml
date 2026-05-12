@@ -3,18 +3,17 @@ services:
     image: ghcr.io/524h0003/project503073:main
     container_name: laravel_app
     ports:
-      - "8000:80"
+      - "8111:80"
     volumes:
-      - ./database:/var/www/html/database
       - ./storage:/var/www/html/storage
     environment:
       - APP_ENV=production
       - APP_DEBUG=false
-      - APP_URL=http://localhost:8000
+      - APP_URL=http://localhost:8111
 
       # Cấu hình Database (Dùng SQLite)
       - DB_CONNECTION=sqlite
-      - DB_DATABASE=/var/www/html/database/database.sqlite
+      - SESSION_DRIVER=file
 
       # CẤU HÌNH SMTP EMAIL (Thay đổi các giá trị dưới đây)
       - MAIL_MAILER=smtp
@@ -23,7 +22,5 @@ services:
       - MAIL_USERNAME=vietuk.nguyen@gmail.com
       - MAIL_PASSWORD=tcod hvvf lmjb cuvl
       - MAIL_ENCRYPTION=tls
-      - MAIL_FROM_ADDRESS="${MAIL_USERNAME}"
-      - MAIL_FROM_NAME="${APP_NAME}"
 
     restart: unless-stopped
