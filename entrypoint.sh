@@ -2,6 +2,8 @@
 set -e
 
 echo "Running migrations..."
+chown -R www-data:www-data /var/www/storage /var/www/database
+chmod -R 775 /var/www/database /var/www/storage
 php artisan migrate --force
 
 # 1. Kiểm tra file .env, nếu chưa có thì tạo từ .env.example
