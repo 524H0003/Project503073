@@ -3,7 +3,7 @@ services:
     image: ghcr.io/524h0003/project503073:main
     container_name: laravel_app
     ports:
-      - "8000:80"
+      - "8111:80"
     volumes:
       - ./storage:/var/www/html/storage
     environment:
