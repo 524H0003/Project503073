@@ -27,3 +27,6 @@ services:
       - MAIL_FROM_NAME="${APP_NAME}"
 
     restart: unless-stopped
+    command: >
+      sh -c "php artisan migrate --force && 
+             php artisan storage:link"
