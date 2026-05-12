@@ -9,10 +9,11 @@ services:
     environment:
       - APP_ENV=production
       - APP_DEBUG=false
-      - APP_URL=http://localhost:8000
+      - APP_URL=http://localhost:8111
 
       # Cấu hình Database (Dùng SQLite)
       - DB_CONNECTION=sqlite
+      - SESSION_DRIVER=file
 
       # CẤU HÌNH SMTP EMAIL (Thay đổi các giá trị dưới đây)
       - MAIL_MAILER=smtp
