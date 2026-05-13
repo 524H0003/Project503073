@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Note;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 
 class NoteController extends Controller
@@ -107,5 +109,38 @@ class NoteController extends Controller
 		]);
 
 		return back();
+	}
+
+	public function unlock(Request $request, Note $note)
+	{
+		$request->validate([
+			"password" => "required|string",
+		]);
+
+		if (!Hash::check($request->password, $note->password)) {
+			return back()->with("message", "Wrong password");
+		}
+
+		$unlocked = Session::get("unlocked_notes", []);
+		if (!in_array($note->id, $unlocked)) {
+			$unlocked[] = $note->id;
+			Session::put("unlocked_notes", $unlocked);
+		}
+
+		return response()->json([
+			"success" => true,
+			"content" => $note->content,
+		]);
+	}
+
+	public function lock(Note $note)
+	{
+		$unlocked = Session::get("unlocked_notes", []);
+
+		$unlocked = array_diff($unlocked, [$note->id]);
+
+		Session::put("unlocked_notes", $unlocked);
+
+		return back()->with("message", "Note locked");
 	}
 }

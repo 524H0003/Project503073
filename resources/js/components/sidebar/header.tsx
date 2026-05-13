@@ -35,6 +35,7 @@ import {
 import { Tag, Check } from "lucide-react";
 import { IPage } from "@/lib/types";
 import { Label } from "@/types/model";
+import NoteLock from "./buttons/NoteLock";
 
 export function SiteHeader() {
 	const { labels } = usePage<IPage>().props;
@@ -89,7 +90,7 @@ export function SiteHeader() {
 							<Sparkles className="relative h-3.5 w-3.5 text-pink-500" />
 						</div>
 
-						<span className="bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+						<span className="bg-linear-to-r from-indigo-600 via-purple-500 to-pink-500 bg-clip-text text-transparent">
 							Editing Mode
 						</span>
 					</div>
@@ -103,7 +104,7 @@ export function SiteHeader() {
 								id="title"
 								onChange={handleChange}
 								placeholder="Tiêu đề..."
-								className="min-w-[120px] flex-1 border-none bg-transparent px-0 text-base font-bold tracking-tight text-slate-800 shadow-none placeholder:text-slate-300 focus-visible:ring-0"
+								className="min-w-30 flex-1 border-none bg-transparent px-0 text-base font-bold tracking-tight text-slate-800 shadow-none placeholder:text-slate-300 focus-visible:ring-0"
 							/>
 
 							<div className="mt-1 hidden sm:flex items-center gap-2 text-xs text-slate-500">
@@ -145,7 +146,7 @@ export function SiteHeader() {
 									<Button
 										variant="outline"
 										size="sm"
-										className="group border-white/40 bg-white/40 shadow-[0_8px_24px_rgba(99,102,241,0.08)] backdrop-blur-2xl transition-all duration-300 hover:-translate-y-0.5 hover:border-indigo-200 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-pink-50 hover:text-indigo-600 hover:shadow-[0_12px_30px_rgba(99,102,241,0.18)]"
+										className="group border-white/40 bg-white/40 shadow-[0_8px_24px_rgba(99,102,241,0.08)] backdrop-blur-2xl transition-all duration-300 hover:-translate-y-0.5 hover:border-indigo-200 hover:bg-linear-to-r hover:from-indigo-50 hover:to-pink-50 hover:text-indigo-600 hover:shadow-[0_12px_30px_rgba(99,102,241,0.18)]"
 									>
 										<Share className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12 sm:mr-2" />
 
@@ -188,7 +189,7 @@ export function SiteHeader() {
 									<Button
 										variant="outline"
 										size="sm"
-										className="border-white/40 bg-white/40 shadow-[0_8px_24px_rgba(99,102,241,0.08)] backdrop-blur-2xl transition-all duration-300 hover:-translate-y-0.5 hover:border-indigo-200 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 hover:text-indigo-600 hover:shadow-[0_12px_30px_rgba(99,102,241,0.18)]"
+										className="border-white/40 bg-white/40 shadow-[0_8px_24px_rgba(99,102,241,0.08)] backdrop-blur-2xl transition-all duration-300 hover:-translate-y-0.5 hover:border-indigo-200 hover:bg-linear-to-r hover:from-indigo-50 hover:to-purple-50 hover:text-indigo-600 hover:shadow-[0_12px_30px_rgba(99,102,241,0.18)]"
 									>
 										Menu
 									</Button>
@@ -264,6 +265,8 @@ export function SiteHeader() {
 											<Trash className="h-4 w-4" />
 											Xóa ghi chú
 										</Button>
+
+										<NoteLock />
 									</div>
 								</DropdownMenuContent>
 							</DropdownMenu>

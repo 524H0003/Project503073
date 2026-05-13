@@ -3,12 +3,37 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Http\Request;
 
 class Note extends Model
 {
-	protected $fillable = ["user_id", "title", "content", "is_pinned", "labels"];
+	protected $fillable = [
+		"user_id",
+		"title",
+		"content",
+		"is_pinned",
+		"password",
+	];
+
+	protected $appends = ["is_locked"];
+
+	// Casts nên để là function hoặc property tùy version Laravel (Laravel 11+ dùng function)
+	protected function casts(): array
+	{
+		return [
+			"password" => "hashed",
+			"is_pinned" => "boolean", // Cast thẳng ở đây cho tiện
+		];
+	}
+
+	public function getIsLockedAttribute(): bool
+	{
+		return !empty($this->password);
+	}
 
 	public function scopeOrdered($query)
 	{
@@ -22,7 +47,21 @@ class Note extends Model
 
 	protected function content(): Attribute
 	{
-		return Attribute::make(set: fn(?string $value) => $value ?? "");
+		return Attribute::make(
+			get: function ($value, $attributes) {
+				$unlockedNotes = Session::get("unlocked_notes", []);
+
+				if (
+					empty($attributes["password"]) ||
+					in_array($this->id, $unlockedNotes)
+				) {
+					return $value;
+				}
+
+				return "🔒 Nội dung này đã bị khóa.";
+			},
+			set: fn(?string $value) => $value ?? "",
+		);
 	}
 
 	protected function title(): Attribute
@@ -30,9 +69,9 @@ class Note extends Model
 		return Attribute::make(set: fn(?string $value) => $value ?? "");
 	}
 
-	protected function is_pinned(): Attribute
+	protected function isPinned(): Attribute
 	{
-		return Attribute::make(set: fn(?boolval $value) => $value ?? false);
+		return Attribute::make(set: fn($value) => (bool) ($value ?? false));
 	}
 
 	public function scopeSearch($query, ?string $search)
@@ -53,16 +92,15 @@ class Note extends Model
 		return $this->belongsToMany(Label::class);
 	}
 
-	public function setLabels(Note $note, Request $request)
+	public function setLabels(Request $request)
 	{
-		// Lọc danh sách ID gửi lên, chỉ giữ lại những ID thực sự thuộc về user này
 		$validLabelIds = auth()
 			->user()
 			->labels()
-			->whereIn("id", $request->label_ids)
+			->whereIn("id", $request->label_ids ?? [])
 			->pluck("id");
 
-		$note->labels()->sync($validLabelIds);
+		$this->labels()->sync($validLabelIds);
 	}
 
 	public function scopeFilterByLabels($query, $labelIds)
