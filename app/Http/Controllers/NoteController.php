@@ -61,17 +61,40 @@ class NoteController extends Controller
 	{
 		$this->authorize("update", $note);
 
+		$unlockedNotes = session("unlocked_notes", []);
+		$isUnlocked = empty($note->password) || in_array($note->id, $unlockedNotes);
+
 		$validated = $request->validate([
 			"title" => "nullable|string|max:255",
 			"content" => "nullable|string",
+			"password" => "nullable|string|min:4",
 			"labels" => "nullable|array",
 			"labels.*" => "exists:labels,id",
 		]);
 
-		$note->update([
-			"title" => $validated["title"] ?? "",
-			"content" => $validated["content"] ?? "",
+		if ($request->has("content") || $request->has("title")) {
+			if (!$isUnlocked) {
+				return back()->with(
+					"message",
+					"You need to unlock note to edit content",
+				);
+			}
+		}
+
+		$note->fill([
+			"title" => $request->has("title")
+				? $validated["title"] ?? ""
+				: $note->title,
+			"content" => $request->has("content")
+				? $validated["content"] ?? ""
+				: $note->content,
 		]);
+
+		if ($request->filled("password")) {
+			$note->password = $validated["password"];
+		}
+
+		$note->save();
 
 		if ($request->has("labels")) {
 			$validIds = auth()
@@ -127,10 +150,7 @@ class NoteController extends Controller
 			Session::put("unlocked_notes", $unlocked);
 		}
 
-		return response()->json([
-			"success" => true,
-			"content" => $note->content,
-		]);
+		return back();
 	}
 
 	public function lock(Note $note)

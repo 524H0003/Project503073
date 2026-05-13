@@ -32,16 +32,25 @@ export default function NoteLock() {
 		});
 	};
 
+	const handleSetPassword = (e: React.FormEvent) => {
+		e.preventDefault();
+		passwordForm.patch(route("notes.update", data.id), {
+			onSuccess: () => {
+				setIsPasswordModalOpen(false);
+				passwordForm.reset();
+			},
+		});
+	};
+
 	const handleLockManual = () => {
 		router.post(route("notes.lock", data.id));
 	};
 
-	const isCurrentlyLocked = data.is_locked;
+	const isCurrentlyLocked = !data.is_opened;
 
 	return (
 		<>
 			{data.is_locked ? (
-				// Nếu Note đã có mật khẩu trong DB
 				isCurrentlyLocked ? (
 					<Button
 						variant="outline"
@@ -62,14 +71,10 @@ export default function NoteLock() {
 					</Button>
 				)
 			) : (
-				// Nếu Note chưa có mật khẩu
 				<Button
 					variant="outline"
 					className="justify-start gap-2 border-none bg-transparent hover:bg-indigo-50"
-					onClick={() => {
-						/* Logic để hiện modal Đặt mật khẩu lần đầu */
-						setIsPasswordModalOpen(true);
-					}}
+					onClick={() => setIsPasswordModalOpen(true)}
 				>
 					<KeyRound className="h-4 w-4" />
 					Đặt mật khẩu
@@ -77,28 +82,43 @@ export default function NoteLock() {
 			)}
 
 			<Dialog open={isPasswordModalOpen} onOpenChange={setIsPasswordModalOpen}>
-				<DialogContent className="sm:max-w-106.25 rounded-3xl backdrop-blur-2xl bg-white/80 border-white/40">
+				<DialogContent className="sm:max-w-md rounded-3xl backdrop-blur-2xl bg-white/80 border-white/40">
 					<DialogHeader>
 						<DialogTitle className="flex items-center gap-2">
 							<Lock className="h-5 w-5 text-indigo-500" />
-							{data.is_locked ? "Nhập mật khẩu" : "Thiết lập mật khẩu"}
+							{/* Đổi tiêu đề dựa theo trạng thái */}
+							{data.is_locked
+								? "Nhập mật khẩu để xem"
+								: "Thiết lập mật khẩu bảo mật"}
 						</DialogTitle>
 					</DialogHeader>
 
 					<form
-						onSubmit={data.is_locked ? handleUnlock : handleLockManual}
+						onSubmit={data.is_locked ? handleUnlock : handleSetPassword}
 						className="space-y-4 py-4"
 					>
-						<Input
-							type="password"
-							placeholder="Nhập mật khẩu tại đây..."
-							value={passwordForm.data.password}
-							onChange={(e) => passwordForm.setData("password", e.target.value)}
-							autoFocus
-							className="rounded-xl border-indigo-100 focus-visible:ring-indigo-400"
-						/>
+						<div className="space-y-2">
+							<Input
+								type="password"
+								placeholder={
+									data.is_locked ? "Mật khẩu..." : "Nhập mật khẩu mới..."
+								}
+								value={passwordForm.data.password}
+								onChange={(e) =>
+									passwordForm.setData("password", e.target.value)
+								}
+								autoFocus
+								className="rounded-xl border-indigo-100 focus-visible:ring-indigo-400"
+							/>
+							{!data.is_locked && (
+								<p className="text-[10px] text-slate-500 px-1">
+									* Mật khẩu này sẽ bảo vệ nội dung ghi chú của bạn.
+								</p>
+							)}
+						</div>
+
 						{passwordForm.errors.password && (
-							<p className="text-xs text-red-500">
+							<p className="text-xs text-red-500 font-medium">
 								{passwordForm.errors.password}
 							</p>
 						)}
@@ -107,12 +127,14 @@ export default function NoteLock() {
 							<Button
 								type="submit"
 								disabled={passwordForm.processing}
-								className="w-full rounded-xl bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-200"
+								className="w-full rounded-xl bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all active:scale-95"
 							>
 								{passwordForm.processing ? (
 									<Loader2 className="h-4 w-4 animate-spin" />
+								) : data.is_locked ? (
+									"Mở khóa"
 								) : (
-									"Xác nhận"
+									"Lưu mật khẩu"
 								)}
 							</Button>
 						</DialogFooter>

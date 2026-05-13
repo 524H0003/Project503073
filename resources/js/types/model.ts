@@ -17,6 +17,7 @@ export type Note = {
     is_pinned: any;
     password?: string;
     is_locked: any;
+    is_opened: any;
     user?: User;
     labels?: Label[];
 };

@@ -19,9 +19,8 @@ class Note extends Model
 		"password",
 	];
 
-	protected $appends = ["is_locked"];
+	protected $appends = ["is_locked", "is_opened"];
 
-	// Casts nên để là function hoặc property tùy version Laravel (Laravel 11+ dùng function)
 	protected function casts(): array
 	{
 		return [
@@ -33,6 +32,16 @@ class Note extends Model
 	public function getIsLockedAttribute(): bool
 	{
 		return !empty($this->password);
+	}
+
+	public function getIsOpenedAttribute(): bool
+	{
+		if (!$this->is_locked) {
+			return true;
+		}
+
+		$unlockedNotes = session("unlocked_notes", []);
+		return in_array($this->id, $unlockedNotes);
 	}
 
 	public function scopeOrdered($query)
