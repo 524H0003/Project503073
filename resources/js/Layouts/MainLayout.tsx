@@ -11,16 +11,33 @@ import { IPage } from "@/lib/types";
 import { toast } from "sonner";
 import { MailWarning } from "lucide-react";
 import { route } from "ziggy-js";
+import { cn } from "@/lib/utils";
 
 export default function MainLayout(children: ReactNode) {
 	const { url, props } = usePage<IPage>(),
 		[open, setOpen] = useState(true);
 
 	const user = props.auth.user;
+	const preferences = props.auth.user?.preferences! as {
+		theme?: string;
+		font_size?: string;
+	};
+
+	const [theme, setTheme] = useState(preferences?.theme || "light");
 
 	useEffect(() => {
+		console.log("User preferences loaded:", preferences);
+
+		if (preferences?.theme) {
+			setTheme(preferences.theme);
+		}
+	}, [preferences?.theme]);
+
+	useEffect(() => {
+		let toastId: string | number;
+
 		if (user && !user.email_verified_at) {
-			toast.error("Tài khoản chưa xác thực", {
+			toastId = toast.error("Tài khoản chưa xác thực", {
 				description: "Vui lòng xác nhận email để sử dụng đầy đủ tính năng.",
 				duration: Infinity,
 				icon: <MailWarning className="h-5 w-5 text-destructive" />,
@@ -28,7 +45,7 @@ export default function MainLayout(children: ReactNode) {
 					label: "Gửi lại mã",
 					onClick: () => {
 						router.post(
-							route("verification.send"),
+							route("verification.send", {}, false),
 							{},
 							{
 								onSuccess: () => toast.success("Đã gửi lại link xác nhận!"),
@@ -38,7 +55,11 @@ export default function MainLayout(children: ReactNode) {
 				},
 			});
 		}
-	}, [user]);
+
+		return () => {
+			if (toastId) toast.dismiss(toastId);
+		};
+	}, [user?.email_verified_at]);
 
 	return (
 		<TooltipProvider>
@@ -46,6 +67,7 @@ export default function MainLayout(children: ReactNode) {
 				<SidebarProvider
 					open={window.location.pathname !== "/" && open}
 					onOpenChange={setOpen}
+					className={cn(theme === "dark" ? "dark" : "")}
 				>
 					<AppSidebar />
 					<SidebarInset className="h-dvh min-w-0 overflow-hidden md:h-[calc(100dvh-16px)] flex flex-col">
