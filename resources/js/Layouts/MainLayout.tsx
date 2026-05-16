@@ -11,7 +11,6 @@ import { IPage } from "@/lib/types";
 import { toast } from "sonner";
 import { MailWarning } from "lucide-react";
 import { route } from "ziggy-js";
-import { cn } from "@/lib/utils";
 
 interface UserPreferences {
 	theme?: "light" | "dark";
@@ -23,27 +22,34 @@ export default function MainLayout(children: ReactNode) {
 	const [open, setOpen] = useState(true);
 
 	const user = props.auth.user;
-
 	const preferences = (props.auth.user?.preferences || {}) as UserPreferences;
 
 	const [theme, setTheme] = useState(preferences?.theme || "light");
 	const [fontSize, setFontSize] = useState(preferences?.font_size || "base");
 
+	const fontSizeMap = { sm: "14px", base: "16px", lg: "18px", xl: "20px" };
+
 	useEffect(() => {
-		if (preferences?.theme) {
-			setTheme(preferences.theme);
-		}
-		if (preferences?.font_size) {
-			setFontSize(preferences.font_size);
-		}
+		if (preferences?.theme) setTheme(preferences.theme);
+		if (preferences?.font_size) setFontSize(preferences.font_size);
 	}, [preferences?.theme, preferences?.font_size]);
 
-	const fontSizeClasses = {
-		sm: "text-sm",
-		base: "text-base",
-		lg: "text-lg",
-		xl: "text-xl",
-	};
+	useEffect(() => {
+		const root = document.documentElement;
+		const body = document.body;
+
+		if (theme === "dark") {
+			root.classList.add("dark");
+			body.classList.add("dark");
+		} else {
+			root.classList.remove("dark");
+			body.classList.remove("dark");
+		}
+
+		root.style.fontSize = fontSizeMap[fontSize] || "16px";
+
+		body.style.setProperty("--note-font-size", fontSizeMap[fontSize] || "16px");
+	}, [theme, fontSize]);
 
 	useEffect(() => {
 		let toastId: string | number;
@@ -79,13 +85,9 @@ export default function MainLayout(children: ReactNode) {
 				<SidebarProvider
 					open={window.location.pathname !== "/" && open}
 					onOpenChange={setOpen}
-					className={cn(
-						theme === "dark" ? "dark" : "",
-						fontSizeClasses[fontSize] || "text-base",
-					)}
 				>
 					<AppSidebar />
-					<SidebarInset className="h-dvh min-w-0 overflow-hidden md:h-[calc(100dvh-16px)] flex flex-col">
+					<SidebarInset className="h-dvh min-w-0 overflow-hidden md:h-[calc(100dvh-(var(--spacing)*4))] flex flex-col">
 						{url !== "/" && <SiteHeader />}
 						<div className="block flex-1 overflow-auto">{children}</div>
 						<Toaster closeButton richColors />

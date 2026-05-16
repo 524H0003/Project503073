@@ -23,9 +23,10 @@ import { Loader2, Camera } from "lucide-react";
 import { toast } from "sonner";
 import { route } from "ziggy-js";
 import MainLayout from "@/Layouts/MainLayout";
+import { IPage } from "@/lib/types";
 
 export default function Edit() {
-	const { user, status } = usePage<any>().props;
+	const { user } = usePage<IPage>().props;
 	const avatarInput = useRef<HTMLInputElement>(null);
 
 	const profileForm = useForm({
