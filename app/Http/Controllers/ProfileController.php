@@ -71,7 +71,7 @@ class ProfileController extends Controller
 		$user = $request->user();
 		$request->validate([
 			"theme" => "required|in:light,dark",
-			"font_size" => "required|in:small,medium,large",
+			"font_size" => "required|in:sm,base,lg,xl",
 		]);
 
 		$user->preferences = [

@@ -35,6 +35,7 @@ import {
 import { Tag, Check } from "lucide-react";
 import { IPage } from "@/lib/types";
 import { Label } from "@/types/model";
+import { cn } from "@/lib/utils";
 
 export function SiteHeader() {
 	const { labels } = usePage<IPage>().props;
@@ -68,14 +69,17 @@ export function SiteHeader() {
 				<div className="absolute bottom-0 left-1/3 h-24 w-24 rounded-full bg-purple-400/20 blur-3xl" />
 			</div>
 
-			{/* Noise Overlay */}
-			<div className="absolute inset-0 opacity-[0.03] [background-image:url('https://grainy-gradients.vercel.app/noise.svg')]" />
-
 			<div className="relative flex w-full flex-wrap items-center gap-2 px-3 lg:px-6">
 				<div className="flex items-center gap-2">
-					<div className="group rounded-2xl border border-white/40 bg-white/50 p-2 shadow-[0_8px_30px_rgb(99,102,241,0.15)] backdrop-blur-2xl transition-all duration-300 hover:scale-105 hover:rotate-2 hover:bg-white/70">
-						<SidebarTrigger className="-ml-1 text-indigo-600 transition-colors duration-200 group-hover:text-purple-600" />
-					</div>
+					<SidebarTrigger
+						className={cn(
+							"p-2 rounded-2xl border border-white/40 bg-white/50 text-indigo-600",
+							"shadow-[0_8px_30px_rgb(99,102,241,0.15)] backdrop-blur-2xl",
+							"transition-all duration-300",
+							"hover:scale-105 hover:rotate-2 hover:bg-white/70 hover:text-purple-600",
+							"relative z-50 cursor-pointer",
+						)}
+					/>
 
 					<Separator
 						orientation="vertical"

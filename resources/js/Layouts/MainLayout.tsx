@@ -13,25 +13,37 @@ import { MailWarning } from "lucide-react";
 import { route } from "ziggy-js";
 import { cn } from "@/lib/utils";
 
+interface UserPreferences {
+	theme?: "light" | "dark";
+	font_size?: "sm" | "base" | "lg" | "xl";
+}
+
 export default function MainLayout(children: ReactNode) {
-	const { url, props } = usePage<IPage>(),
-		[open, setOpen] = useState(true);
+	const { url, props } = usePage<IPage>();
+	const [open, setOpen] = useState(true);
 
 	const user = props.auth.user;
-	const preferences = props.auth.user?.preferences! as {
-		theme?: string;
-		font_size?: string;
-	};
+
+	const preferences = (props.auth.user?.preferences || {}) as UserPreferences;
 
 	const [theme, setTheme] = useState(preferences?.theme || "light");
+	const [fontSize, setFontSize] = useState(preferences?.font_size || "base");
 
 	useEffect(() => {
-		console.log("User preferences loaded:", preferences);
-
 		if (preferences?.theme) {
 			setTheme(preferences.theme);
 		}
-	}, [preferences?.theme]);
+		if (preferences?.font_size) {
+			setFontSize(preferences.font_size);
+		}
+	}, [preferences?.theme, preferences?.font_size]);
+
+	const fontSizeClasses = {
+		sm: "text-sm",
+		base: "text-base",
+		lg: "text-lg",
+		xl: "text-xl",
+	};
 
 	useEffect(() => {
 		let toastId: string | number;
@@ -67,7 +79,10 @@ export default function MainLayout(children: ReactNode) {
 				<SidebarProvider
 					open={window.location.pathname !== "/" && open}
 					onOpenChange={setOpen}
-					className={cn(theme === "dark" ? "dark" : "")}
+					className={cn(
+						theme === "dark" ? "dark" : "",
+						fontSizeClasses[fontSize] || "text-base",
+					)}
 				>
 					<AppSidebar />
 					<SidebarInset className="h-dvh min-w-0 overflow-hidden md:h-[calc(100dvh-16px)] flex flex-col">
