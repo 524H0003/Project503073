@@ -17,6 +17,7 @@ import {
 	CardContent,
 	CardFooter,
 } from "./ui/card";
+import { route } from "ziggy-js";
 
 export default function AuthenticationCard() {
 	const [isLogin, toggleIsLogin] = useState(true),
@@ -36,7 +37,7 @@ export default function AuthenticationCard() {
 		AuthenticationType = (revert = false) =>
 			isLogin !== revert ? "Login Efficia Note" : "Sign Up Efficia Note";
 	return (
-		<div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-violet-200 via-indigo-100 to-cyan-100 px-4">
+		<div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-linear-to-br from-violet-200 via-indigo-100 to-cyan-100 px-4">
 			{/* Background blur */}
 			<div className="absolute -top-32 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-violet-300/40 blur-3xl" />
 			<div className="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-cyan-300/30 blur-3xl" />
@@ -50,12 +51,12 @@ export default function AuthenticationCard() {
 				>
 					<Card
 						className={`w-full border border-white/40 bg-white/60 shadow-2xl backdrop-blur-xl transition-all ${
-							isLogin ? "max-w-sm" : "max-w-[340px]"
+							isLogin ? "max-w-sm" : "max-w-85"
 						}`}
 					>
 						<CardHeader className="space-y-3 pb-4">
 							<div className="flex items-center justify-center">
-								<div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-400 to-cyan-300 shadow-lg">
+								<div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-violet-400 to-cyan-300 shadow-lg">
 									<span className="text-2xl">✨</span>
 								</div>
 							</div>
@@ -124,7 +125,7 @@ export default function AuthenticationCard() {
 												</Label>
 
 												<a
-													href="#"
+													href={route("password.request")}
 													className="ml-auto text-sm text-violet-600 transition hover:text-violet-800 hover:underline"
 												>
 													Forgot password?
@@ -161,24 +162,11 @@ export default function AuthenticationCard() {
 						<CardFooter className="flex-col gap-2 pt-2">
 							<Button
 								type="submit"
-								className="h-11 w-full rounded-xl bg-gradient-to-r from-violet-400 to-cyan-300 text-white shadow-lg transition hover:scale-[1.02] hover:from-violet-500 hover:to-cyan-400"
+								className="h-11 w-full rounded-xl bg-linear-to-r from-violet-400 to-cyan-300 text-white shadow-lg transition hover:scale-[1.02] hover:from-violet-500 hover:to-cyan-400"
 								disabled={processing}
 								form={formId}
 							>
 								{AuthenticationType()}
-							</Button>
-
-							<div className="flex w-full items-center gap-3 py-1">
-								<div className="h-px flex-1 bg-slate-300" />
-								<span className="text-xs text-slate-400">OR</span>
-								<div className="h-px flex-1 bg-slate-300" />
-							</div>
-
-							<Button
-								variant="outline"
-								className="w-full rounded-xl border-violet-200 bg-white/60 text-slate-700 transition hover:bg-violet-50"
-							>
-								Continue with Google
 							</Button>
 
 							{Object.values(errors).some((error) => error) && isLogin && (
