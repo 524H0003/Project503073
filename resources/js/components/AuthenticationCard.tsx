@@ -17,6 +17,7 @@ import {
 	CardContent,
 	CardFooter,
 } from "./ui/card";
+import { route } from "ziggy-js";
 
 export default function AuthenticationCard() {
 	const [isLogin, toggleIsLogin] = useState(true),
@@ -124,7 +125,7 @@ export default function AuthenticationCard() {
 												</Label>
 
 												<a
-													href="#"
+													href={route("password.request")}
 													className="ml-auto text-sm text-violet-600 transition hover:text-violet-800 hover:underline"
 												>
 													Forgot password?
@@ -166,19 +167,6 @@ export default function AuthenticationCard() {
 								form={formId}
 							>
 								{AuthenticationType()}
-							</Button>
-
-							<div className="flex w-full items-center gap-3 py-1">
-								<div className="h-px flex-1 bg-slate-300" />
-								<span className="text-xs text-slate-400">OR</span>
-								<div className="h-px flex-1 bg-slate-300" />
-							</div>
-
-							<Button
-								variant="outline"
-								className="w-full rounded-xl border-violet-200 bg-white/60 text-slate-700 transition hover:bg-violet-50"
-							>
-								Continue with Google
 							</Button>
 
 							{Object.values(errors).some((error) => error) && isLogin && (
