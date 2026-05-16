@@ -14,7 +14,7 @@ import { useState } from "react";
 import { route } from "ziggy-js";
 
 export default function NoteLock() {
-	const { data } = useNote();
+	const { data, setData } = useNote();
 
 	const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
@@ -27,6 +27,7 @@ export default function NoteLock() {
 		passwordForm.post(route("notes.unlock", data.id), {
 			onSuccess: () => {
 				setIsPasswordModalOpen(false);
+				setData({ ...data, is_opened: true });
 				passwordForm.reset();
 			},
 		});
@@ -37,6 +38,7 @@ export default function NoteLock() {
 		passwordForm.patch(route("notes.update", data.id), {
 			onSuccess: () => {
 				setIsPasswordModalOpen(false);
+				setData({ ...data, is_opened: false, is_locked: true });
 				passwordForm.reset();
 			},
 		});
@@ -44,6 +46,7 @@ export default function NoteLock() {
 
 	const handleLockManual = () => {
 		router.post(route("notes.lock", data.id));
+		setData({ ...data, is_opened: false });
 	};
 
 	const isCurrentlyLocked = !data.is_opened;
