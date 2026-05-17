@@ -17,7 +17,9 @@ import { ResizableImage } from "tiptap-extension-resizable-image";
 export function Editor() {
 	const { data, setData } = useNote();
 
-	const isEditable = data.current_user_permission == "edit";
+	const isEditable = ["edit", "owner"].some(
+		(i) => data.current_user_permission == i,
+	);
 
 	const editor = useEditor({
 		extensions: [

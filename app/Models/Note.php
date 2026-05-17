@@ -24,6 +24,11 @@ class Note extends Model
 
 	protected $appends = ["is_locked", "is_opened", "current_user_permission"];
 
+	/**
+	 * Eager load các mối quan hệ này theo mặc định.
+	 */
+	protected $with = ["sharedUsers:id,name,email"];
+
 	protected function casts(): array
 	{
 		return [

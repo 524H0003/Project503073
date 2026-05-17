@@ -63,7 +63,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { IPage } from "@/lib/types";
-import { Label } from "@/types/model";
+import { Label, User } from "@/types/model";
 import { cn } from "@/lib/utils";
 import NoteLock from "./buttons/NoteLock";
 import { useState } from "react";
@@ -125,18 +125,18 @@ export function SiteHeader() {
 	};
 
 	const handleUpdateOrRemoveShare = (
-		targetUserId: number,
+		targetEmail: string,
 		action: "view" | "edit" | "remove",
 	) => {
 		if (isCurrentlyLocked || !isOwner) return;
 
 		if (action === "remove") {
 			router.delete(
-				route("notes.share.remove", { note: data.id, user: targetUserId }),
+				route("notes.share.remove", { note: data.id, email: targetEmail }),
 			);
 		} else {
 			router.post(route("notes.share", data.id), {
-				user_id: targetUserId,
+				email: targetEmail,
 				permission: action,
 			});
 		}
@@ -292,9 +292,9 @@ export function SiteHeader() {
 										<h4 className="text-xs font-semibold text-slate-600 mb-2 tracking-wide">
 											Người có quyền truy cập:
 										</h4>
-										<div className="max-h-[160px] overflow-y-auto flex flex-col gap-2 pr-1">
+										<div className="max-h-40 overflow-y-auto flex flex-col gap-2 pr-1">
 											{data.shared_users && data.shared_users.length > 0 ? (
-												data.shared_users.map((user: any) => (
+												data.shared_users.map((user: User) => (
 													<div
 														key={user.id}
 														className="flex items-center justify-between bg-white/40 p-2 rounded-xl border border-white/20"
@@ -311,10 +311,10 @@ export function SiteHeader() {
 															<Select
 																value={user.pivot?.permission || "view"}
 																onValueChange={(val: "view" | "edit") =>
-																	handleUpdateOrRemoveShare(user.id, val)
+																	handleUpdateOrRemoveShare(user.email, val)
 																}
 															>
-																<SelectTrigger className="h-7 w-[80px] rounded-lg text-[11px] border-none bg-slate-100 text-slate-600">
+																<SelectTrigger className="h-7 w-20 rounded-lg text-[11px] border-none bg-slate-100 text-slate-600">
 																	<SelectValue />
 																</SelectTrigger>
 																<SelectContent className="rounded-lg">
@@ -327,7 +327,10 @@ export function SiteHeader() {
 																variant="ghost"
 																className="h-7 w-7 text-red-500 hover:bg-red-50 hover:text-red-600 rounded-lg shrink-0"
 																onClick={() =>
-																	handleUpdateOrRemoveShare(user.id, "remove")
+																	handleUpdateOrRemoveShare(
+																		user.email,
+																		"remove",
+																	)
 																}
 															>
 																<UserMinus className="h-3.5 w-3.5" />

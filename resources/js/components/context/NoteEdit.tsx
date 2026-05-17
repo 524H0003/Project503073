@@ -40,7 +40,7 @@ export function NoteProvider({ children }: PropsWithChildren) {
 				if (
 					!data.id ||
 					!data.is_opened ||
-					data.current_user_permission !== "edit"
+					!["edit", "owner"].some((i) => data.current_user_permission == i)
 				)
 					return;
 
