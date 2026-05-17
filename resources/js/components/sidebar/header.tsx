@@ -10,6 +10,8 @@ import {
 	Share,
 	Trash,
 	Sparkles,
+	Tag,
+	Check,
 } from "lucide-react";
 import { useNote } from "../context/NoteEdit";
 import { Input } from "../ui/input";
@@ -32,7 +34,17 @@ import {
 	DropdownMenuContent,
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { Tag, Check } from "lucide-react";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+	AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { IPage } from "@/lib/types";
 import { Label } from "@/types/model";
 import { cn } from "@/lib/utils";
@@ -58,6 +70,10 @@ export function SiteHeader() {
 			...data,
 			labels: newLabels,
 		});
+	};
+
+	const handleDeleteNote = () => {
+		router.delete(route("notes.destroy", data.id));
 	};
 
 	return (
@@ -89,10 +105,8 @@ export function SiteHeader() {
 					<div className="hidden md:flex items-center gap-2 rounded-full border border-white/40 bg-white/40 px-4 py-1.5 text-xs font-semibold text-indigo-700 shadow-lg backdrop-blur-2xl">
 						<div className="relative">
 							<div className="absolute inset-0 animate-ping rounded-full bg-pink-400 opacity-60" />
-
 							<Sparkles className="relative h-3.5 w-3.5 text-pink-500" />
 						</div>
-
 						<span className="bg-linear-to-r from-indigo-600 via-purple-500 to-pink-500 bg-clip-text text-transparent">
 							Editing Mode
 						</span>
@@ -115,7 +129,6 @@ export function SiteHeader() {
 									<div className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
 									<div className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(34,197,94,0.8)]" />
 								</div>
-
 								<span className="font-medium tracking-wide">
 									Auto saving enabled
 								</span>
@@ -126,19 +139,16 @@ export function SiteHeader() {
 							{processing ? (
 								<div className="flex items-center rounded-full border border-blue-200/40 bg-blue-50/60 px-3 py-1 text-sm text-blue-600 shadow-lg backdrop-blur-xl">
 									<Loader2 className="mr-1 h-4 w-4 animate-spin" />
-
 									<span className="hidden sm:inline">Đang lưu...</span>
 								</div>
 							) : navigator.onLine ? (
 								<div className="flex items-center rounded-full border border-emerald-200/40 bg-emerald-50/60 px-3 py-1 text-sm text-emerald-600 shadow-lg backdrop-blur-xl">
 									<CloudCheck className="mr-1 h-4 w-4" />
-
 									<span className="hidden sm:inline">Đã lưu lên mây</span>
 								</div>
 							) : (
 								<div className="flex items-center rounded-full border border-amber-200/40 bg-amber-50/60 px-3 py-1 text-sm text-amber-600 shadow-lg backdrop-blur-xl">
 									<CloudOff className="mr-1 h-4 w-4" />
-
 									<span className="hidden sm:inline">Đang lưu ngoại tuyến</span>
 								</div>
 							)}
@@ -152,7 +162,6 @@ export function SiteHeader() {
 										className="group border-white/40 bg-white/40 shadow-[0_8px_24px_rgba(99,102,241,0.08)] backdrop-blur-2xl transition-all duration-300 hover:-translate-y-0.5 hover:border-indigo-200 hover:bg-linear-to-r hover:from-indigo-50 hover:to-pink-50 hover:text-indigo-600 hover:shadow-[0_12px_30px_rgba(99,102,241,0.18)]"
 									>
 										<Share className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12 sm:mr-2" />
-
 										<span className="hidden sm:inline">Chia sẻ</span>
 									</Button>
 								</DropdownMenuTrigger>
@@ -168,14 +177,12 @@ export function SiteHeader() {
 										>
 											Chuyển tiếp email
 										</Button>
-
 										<Button
 											variant="outline"
 											className="justify-start border-none bg-transparent transition-all duration-200 hover:bg-purple-50 hover:text-purple-600"
 										>
 											Tạo bản sao ghi chú
 										</Button>
-
 										<Button
 											variant="outline"
 											className="justify-start border-none bg-transparent transition-all duration-200 hover:bg-pink-50 hover:text-pink-600"
@@ -221,10 +228,8 @@ export function SiteHeader() {
 											>
 												<Command>
 													<CommandInput placeholder="Tìm nhãn..." />
-
 													<CommandList>
 														<CommandEmpty>Không tìm thấy nhãn nào</CommandEmpty>
-
 														<CommandGroup>
 															{labels?.map((label: Label) => (
 																<CommandItem
@@ -233,7 +238,6 @@ export function SiteHeader() {
 																	className="flex items-center justify-between"
 																>
 																	<span>{label.name}</span>
-
 																	{noteLabelIds.includes(String(label.id)) && (
 																		<Check className="h-4 w-4 text-primary" />
 																	)}
@@ -257,17 +261,40 @@ export function SiteHeader() {
 											Ghim ghi chú
 										</Button>
 
-										{/* Xóa */}
-										<Button
-											variant="destructive"
-											className="justify-start gap-2 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-red-300/30"
-											onClick={() =>
-												router.delete(route("notes.destroy", data.id))
-											}
-										>
-											<Trash className="h-4 w-4" />
-											Xóa ghi chú
-										</Button>
+										<AlertDialog>
+											<AlertDialogTrigger asChild>
+												<Button
+													variant="destructive"
+													className="justify-start gap-2 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-red-300/30"
+												>
+													<Trash className="h-4 w-4" />
+													Xóa ghi chú
+												</Button>
+											</AlertDialogTrigger>
+
+											<AlertDialogContent className="rounded-2xl border border-white/40 bg-white/80 backdrop-blur-2xl shadow-2xl max-w-[90vw] sm:max-w-[420px]">
+												<AlertDialogHeader>
+													<AlertDialogTitle className="text-slate-800 font-bold">
+														Bạn có chắc chắn muốn xóa?
+													</AlertDialogTitle>
+													<AlertDialogDescription className="text-slate-500 text-sm">
+														Hành động này không thể hoàn tác. Ghi chú này sẽ bị
+														xóa vĩnh viễn khỏi tài khoản của bạn.
+													</AlertDialogDescription>
+												</AlertDialogHeader>
+												<AlertDialogFooter className="mt-2 gap-2">
+													<AlertDialogCancel className="rounded-xl border border-slate-200 bg-white text-slate-700 hover:bg-slate-50">
+														Hủy
+													</AlertDialogCancel>
+													<AlertDialogAction
+														onClick={handleDeleteNote}
+														className="rounded-xl bg-red-600 text-white shadow-md hover:bg-red-700"
+													>
+														Xác nhận xóa
+													</AlertDialogAction>
+												</AlertDialogFooter>
+											</AlertDialogContent>
+										</AlertDialog>
 									</div>
 								</DropdownMenuContent>
 							</DropdownMenu>
