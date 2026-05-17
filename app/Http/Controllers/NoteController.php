@@ -68,7 +68,7 @@ class NoteController extends Controller
 		$validated = $request->validate([
 			"title" => "nullable|string|max:255",
 			"content" => "nullable|string",
-			"password" => "nullable|string|min:4",
+			"password" => "nullable|string|min:4|confirmed",
 			"labels" => "nullable|array",
 			"labels.*" => "exists:labels,id",
 		]);

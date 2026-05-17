@@ -22,6 +22,7 @@ export default function NoteLock() {
 
 	const passwordForm = useForm({
 		password: "",
+		password_confirmation: "",
 	});
 
 	const changePasswordForm = useForm({
@@ -156,9 +157,24 @@ export default function NoteLock() {
 								className="rounded-xl border-indigo-100 focus-visible:ring-indigo-400"
 							/>
 							{!data.is_locked && (
-								<p className="text-[10px] text-slate-500 px-1">
-									* Mật khẩu này sẽ bảo vệ nội dung ghi chú của bạn.
-								</p>
+								<>
+									<Input
+										type="password"
+										placeholder="Xác nhận mật khẩu..."
+										value={passwordForm.data.password_confirmation}
+										onChange={(e) =>
+											passwordForm.setData(
+												"password_confirmation",
+												e.target.value,
+											)
+										}
+										autoFocus
+										className="rounded-xl border-indigo-100 focus-visible:ring-indigo-400"
+									/>
+									<p className="text-[10px] text-slate-500 px-1">
+										* Mật khẩu này sẽ bảo vệ nội dung ghi chú của bạn.
+									</p>
+								</>
 							)}
 						</div>
 

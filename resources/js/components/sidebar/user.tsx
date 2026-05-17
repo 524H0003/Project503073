@@ -37,7 +37,7 @@ export function NavUser({
 	const { isMobile } = useSidebar(),
 		AvatarHolder = () => (
 			<Avatar className="h-8 w-8 rounded-lg">
-				{/* <AvatarImage src={user.avatar || ""} alt={user.name} /> */}
+				<AvatarImage src={user.avatar ? `/storage/${user.avatar}` : ""} />
 				<AvatarFallback className="rounded-lg">
 					<UserIcon></UserIcon>
 				</AvatarFallback>
