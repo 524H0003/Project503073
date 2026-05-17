@@ -62,7 +62,8 @@ class NoteController extends Controller
 		$this->authorize("update", $note);
 
 		$unlockedNotes = session("unlocked_notes", []);
-		$isUnlocked = empty($note->password) || in_array($note->id, $unlockedNotes);
+		$isUnlocked =
+			!$note->getIsLockedAttribute() || in_array($note->id, $unlockedNotes);
 
 		$validated = $request->validate([
 			"title" => "nullable|string|max:255",
@@ -159,6 +160,6 @@ class NoteController extends Controller
 
 		Session::put("unlocked_notes", $unlocked);
 
-		return back()->with("message", "Note locked");
+		return back();
 	}
 }

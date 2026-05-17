@@ -15,9 +15,11 @@ class Note extends Model
 		"user_id",
 		"title",
 		"content",
- "pinned_at",
+		"pinned_at",
 		"password",
 	];
+
+	protected $hidden = ["password"];
 
 	protected $appends = ["is_locked", "is_opened"];
 
@@ -31,7 +33,8 @@ class Note extends Model
 
 	public function getIsLockedAttribute(): bool
 	{
-		return !empty($this->password);
+		$attributes = $this->getAttributes();
+		return !empty($attributes["password"]);
 	}
 
 	public function getIsOpenedAttribute(): bool
@@ -70,7 +73,7 @@ class Note extends Model
 					return $value;
 				}
 
-				return "🔒 Nội dung này đã bị khóa.";
+				return null;
 			},
 			set: fn(?string $value) => $value ?? "",
 		);

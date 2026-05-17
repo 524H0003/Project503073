@@ -48,6 +48,7 @@ import {
 import { IPage } from "@/lib/types";
 import { Label } from "@/types/model";
 import { cn } from "@/lib/utils";
+import NoteLock from "./buttons/NoteLock";
 
 export function SiteHeader() {
 	const { labels } = usePage<IPage>().props;
@@ -261,6 +262,8 @@ export function SiteHeader() {
 											<PinIcon className="h-4 w-4" />
 											Ghim ghi chú
 										</Button>
+
+										<NoteLock />
 
 										<AlertDialog>
 											<AlertDialogTrigger asChild>
