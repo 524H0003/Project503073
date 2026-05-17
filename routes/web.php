@@ -84,6 +84,11 @@ Route::middleware("auth")->group(function () {
 		"changePassword",
 	])->name("notes.changePassword");
 
+	Route::post("/notes/{note}/disable-password", [
+		NoteController::class,
+		"disablePassword",
+	])->name("notes.disablePassword");
+
 	Route::post("/notes/{noteId}/image", [
 		ImageController::class,
 		"upload",

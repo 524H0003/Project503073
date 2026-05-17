@@ -200,4 +200,41 @@ class NoteController extends Controller
 
 		return back();
 	}
+
+	/**
+	 * Tắt tính năng bảo mật bằng mật khẩu của ghi chú
+	 */
+	public function disablePassword(Note $note)
+	{
+		$this->authorize("update", $note);
+
+		// 1. Kiểm tra xem ghi chú hiện tại có thực sự đang cài mật khẩu không
+		$hasPassword = !empty($note->getAttributes()["password"]);
+		if (!$hasPassword) {
+			return back()->with("message", "Ghi chú này hiện không có mật khẩu.");
+		}
+
+		// 2. Bảo mật nâng cao: Bắt buộc ghi chú phải đang ở trạng thái mở khóa (đã nhập pass trước đó)
+		$unlockedNotes = session("unlocked_notes", []);
+		if (!in_array($note->id, $unlockedNotes)) {
+			return back()->withErrors([
+				"message" =>
+					"Bạn cần phải mở khóa ghi chú này trước khi tắt mật khẩu bảo vệ.",
+			]);
+		}
+
+		// 3. Tiến hành gỡ bỏ mật khẩu
+		$note->password = null;
+		$note->save();
+
+		// 4. Dọn dẹp: Xóa ID ghi chú khỏi Session unlocked vì ghi chú giờ đã là ghi chú thường
+		$unlockedNotes = array_diff($unlockedNotes, [$note->id]);
+		session()->put("unlocked_notes", $unlockedNotes);
+
+		// 5. Đồng bộ lại dữ liệu mới nhất trả về cho Inertia
+		$note->refresh();
+		$note->load("labels:id,name");
+
+		return back()->with("message", "Đã tắt tính năng bảo mật bằng mật khẩu.");
+	}
 }

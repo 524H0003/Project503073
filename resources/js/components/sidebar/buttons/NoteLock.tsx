@@ -3,13 +3,14 @@ import { Button } from "@/components/ui/button";
 import {
 	Dialog,
 	DialogContent,
+	DialogDescription,
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { router, useForm } from "@inertiajs/react";
-import { KeyRound, Loader2, Lock, Unlock } from "lucide-react";
+import { KeyRound, Loader2, Lock, ShieldOff, Unlock } from "lucide-react";
 import { useState } from "react";
 import { route } from "ziggy-js";
 
@@ -18,6 +19,9 @@ export default function NoteLock() {
 
 	const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 	const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] =
+		useState(false);
+	// Trạng thái modal xác nhận xóa mật khẩu
+	const [isDisablePasswordModalOpen, setIsDisablePasswordModalOpen] =
 		useState(false);
 
 	const passwordForm = useForm({
@@ -30,14 +34,15 @@ export default function NoteLock() {
 		new_password_confirmation: "",
 	});
 
+	// Form trống xử lý request xóa mật khẩu
+	const disablePasswordForm = useForm({});
+
 	const handleUnlock = (e: React.FormEvent) => {
 		e.preventDefault();
 		passwordForm.post(route("notes.unlock", data.id), {
 			onSuccess: (page) => {
 				setIsPasswordModalOpen(false);
-
 				const updatedNote = page.props.note as any;
-
 				if (updatedNote) {
 					setData({
 						...data,
@@ -46,7 +51,6 @@ export default function NoteLock() {
 						title: updatedNote.title ?? "",
 					});
 				}
-
 				passwordForm.reset();
 			},
 		});
@@ -74,7 +78,16 @@ export default function NoteLock() {
 			onSuccess: () => {
 				setIsChangePasswordModalOpen(false);
 				changePasswordForm.reset();
-				alert("Đổi mật khẩu ghi chú thành công!");
+			},
+		});
+	};
+
+	const handleDisablePassword = (e: React.FormEvent) => {
+		e.preventDefault();
+		disablePasswordForm.post(route("notes.disablePassword", data.id), {
+			onSuccess: () => {
+				setIsDisablePasswordModalOpen(false);
+				setData({ ...data, is_locked: false, is_opened: true });
 			},
 		});
 	};
@@ -113,6 +126,16 @@ export default function NoteLock() {
 								<KeyRound className="h-4 w-4" />
 								Đổi mật khẩu
 							</Button>
+
+							{/* NÚT TẮT BẢO MẬT: Chỉ xuất hiện khi note đang ở trạng thái Unlocked */}
+							<Button
+								variant="outline"
+								className="justify-start gap-2 border-none bg-rose-50 text-rose-600 hover:bg-rose-100"
+								onClick={() => setIsDisablePasswordModalOpen(true)}
+							>
+								<ShieldOff className="h-4 w-4" />
+								Tắt mật khẩu
+							</Button>
 						</>
 					)
 				) : (
@@ -127,7 +150,7 @@ export default function NoteLock() {
 				)}
 			</div>
 
-			{/* --- DIALOG 1: UNLOCK HOẶC SET PASSWORD LẦN ĐẦU --- */}
+			{/* --- DIALOG 1: UNLOCK HOẶC SET PASSWORD --- */}
 			<Dialog open={isPasswordModalOpen} onOpenChange={setIsPasswordModalOpen}>
 				<DialogContent className="sm:max-w-md rounded-3xl backdrop-blur-2xl bg-white/80 border-white/40">
 					<DialogHeader>
@@ -177,18 +200,16 @@ export default function NoteLock() {
 								</>
 							)}
 						</div>
-
 						{passwordForm.errors.password && (
 							<p className="text-xs text-red-500 font-medium">
 								{passwordForm.errors.password}
 							</p>
 						)}
-
 						<DialogFooter>
 							<Button
 								type="submit"
 								disabled={passwordForm.processing}
-								className="w-full rounded-xl bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all active:scale-95"
+								className="w-full rounded-xl bg-indigo-600"
 							>
 								{passwordForm.processing ? (
 									<Loader2 className="h-4 w-4 animate-spin" />
@@ -203,7 +224,6 @@ export default function NoteLock() {
 				</DialogContent>
 			</Dialog>
 
-			{/* --- DIALOG 2: ĐỔI MẬT KHẨU (Chỉ kích hoạt khi ghi chú đang mở) --- */}
 			<Dialog
 				open={isChangePasswordModalOpen}
 				onOpenChange={setIsChangePasswordModalOpen}
@@ -217,7 +237,6 @@ export default function NoteLock() {
 					</DialogHeader>
 
 					<form onSubmit={handleChangePassword} className="space-y-4 py-4">
-						{/* Ô nhập mật khẩu mới */}
 						<div className="space-y-1">
 							<label className="text-xs font-medium text-slate-600 px-1">
 								Mật khẩu mới
@@ -237,8 +256,6 @@ export default function NoteLock() {
 								</p>
 							)}
 						</div>
-
-						{/* Ô gõ lại mật khẩu mới để confirm */}
 						<div className="space-y-1">
 							<label className="text-xs font-medium text-slate-600 px-1">
 								Xác nhận mật khẩu mới
@@ -256,17 +273,60 @@ export default function NoteLock() {
 								className="rounded-xl border-indigo-100 focus-visible:ring-indigo-400"
 							/>
 						</div>
-
 						<DialogFooter className="pt-2">
 							<Button
 								type="submit"
 								disabled={changePasswordForm.processing}
-								className="w-full rounded-xl bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all active:scale-95"
+								className="w-full rounded-xl bg-indigo-600"
 							>
 								{changePasswordForm.processing ? (
 									<Loader2 className="h-4 w-4 animate-spin" />
 								) : (
 									"Cập nhật mật khẩu"
+								)}
+							</Button>
+						</DialogFooter>
+					</form>
+				</DialogContent>
+			</Dialog>
+
+			{/* --- DIALOG 3: XÁC NHẬN XÓA MẬT KHẨU (DISABLE PASSWORD) --- */}
+			<Dialog
+				open={isDisablePasswordModalOpen}
+				onOpenChange={setIsDisablePasswordModalOpen}
+			>
+				<DialogContent className="sm:max-w-md rounded-3xl ">
+					<DialogHeader>
+						<DialogTitle className="flex items-center gap-2 text-rose-600">
+							<ShieldOff className="h-5 w-5" />
+							Gỡ bỏ mật khẩu ghi chú?
+						</DialogTitle>
+						<DialogDescription className="pt-2 text-slate-500">
+							Hành động này sẽ xóa hoàn toàn mật khẩu bảo vệ của ghi chú này.
+							Bất cứ ai truy cập tài khoản của bạn đều có thể đọc được nội dung
+							mà không cần xác thực.
+						</DialogDescription>
+					</DialogHeader>
+
+					<form onSubmit={handleDisablePassword}>
+						<DialogFooter className="gap-2 sm:gap-0 pt-4">
+							<Button
+								type="button"
+								variant="ghost"
+								onClick={() => setIsDisablePasswordModalOpen(false)}
+								className="rounded-xl border "
+							>
+								Hủy bỏ
+							</Button>
+							<Button
+								type="submit"
+								disabled={disablePasswordForm.processing}
+								className="rounded-xl bg-rose-600 hover:bg-rose-700 text-white shadow-md "
+							>
+								{disablePasswordForm.processing ? (
+									<Loader2 className="h-4 w-4 animate-spin" />
+								) : (
+									"Xác nhận gỡ mật khẩu"
 								)}
 							</Button>
 						</DialogFooter>
