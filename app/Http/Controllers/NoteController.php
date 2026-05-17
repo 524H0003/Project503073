@@ -157,11 +157,43 @@ class NoteController extends Controller
 
 	public function lock(Note $note)
 	{
+		$hasPassword = !empty($note->getAttributes()["password"]);
+
+		if ($hasPassword) {
+			$unlocked = Session::get("unlocked_notes", []);
+
+			$unlocked = array_diff($unlocked, [$note->id]);
+
+			Session::put("unlocked_notes", $unlocked);
+
+			$note->refresh();
+		}
+
+		$note->load("labels:id,name");
+
+		return back();
+	}
+
+	public function changePassword(Request $request, Note $note)
+	{
+		$this->authorize("update", $note);
+
 		$unlocked = Session::get("unlocked_notes", []);
+		if (!in_array($note->id, $unlocked)) {
+			return back()->with(
+				"message",
+				"You need to unlock the note before changing password.",
+			);
+		}
 
-		$unlocked = array_diff($unlocked, [$note->id]);
+		$rules = [
+			"new_password" => "required|string|min:4",
+		];
 
-		Session::put("unlocked_notes", $unlocked);
+		$validated = $request->validate($rules);
+
+		$note->password = $validated["new_password"];
+		$note->save();
 
 		$note->refresh();
 		$note->load("labels:id,name");
