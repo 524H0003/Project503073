@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Note;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 
 class ImageController extends Controller
@@ -32,9 +33,7 @@ class ImageController extends Controller
 	{
 		$note = Note::findOrFail($noteId);
 
-		if ($note->user_id !== auth()->id()) {
-			abort(403, "Bạn không có quyền xem ảnh này.");
-		}
+		Gate::authorize("view", $note);
 
 		$path = "notes/{$noteId}/{$filename}";
 

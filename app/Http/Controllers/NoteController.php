@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class NoteController extends Controller
 {
@@ -40,7 +41,7 @@ class NoteController extends Controller
 	 */
 	public function edit(Note $note)
 	{
-		$this->authorize("update", $note);
+		$this->authorize("view", $note);
 
 		$note->load("labels:id,name");
 
@@ -290,5 +291,58 @@ class NoteController extends Controller
 		$note->load("labels:id,name");
 
 		return back();
+	}
+
+	public function share(Request $request, Note $note)
+	{
+		if ($note->user_id !== auth()->id()) {
+			return back()->withErrors([
+				"message" => "Bạn không có quyền chia sẻ ghi chú này.",
+			]);
+		}
+
+		$unlockedNotes = session("unlocked_notes", []);
+		$isCurrentlyLocked =
+			!empty($note->getAttributes()["password"]) &&
+			!in_array($note->id, $unlockedNotes);
+		if ($isCurrentlyLocked) {
+			return back()->withErrors([
+				"message" => "Bạn phải mở khóa ghi chú trước khi cấu hình chia sẻ.",
+			]);
+		}
+
+		$validated = $request->validate(
+			[
+				"email" => "required|email|exists:users,email",
+				"permission" => "required|in:view,edit",
+			],
+			[
+				"email.exists" =>
+					"Không tìm thấy tài khoản người dùng nào liên kết với email này.",
+			],
+		);
+
+		$targetUser = User::where("email", $validated["email"])->first();
+
+		if ($targetUser->id === auth()->id()) {
+			return back()->withErrors([
+				"email" => "Bạn không thể tự chia sẻ ghi chú cho chính mình.",
+			]);
+		}
+
+		// if ($targetUser->email_verified_at === null) {
+		// 	return back()->withErrors([
+		// 		"email" => "Tài khoản {$validated["email"]} chưa xác thực email, không thể chia sẻ ghi chú.",
+		// 	]);
+		// }
+
+		$note->sharedUsers()->syncWithoutDetaching([
+			$targetUser->id => ["permission" => $validated["permission"]],
+		]);
+
+		return back()->with(
+			"message",
+			"Đã chia sẻ thành công quyền {$validated["permission"]} cho tài khoản {$validated["email"]}.",
+		);
 	}
 }

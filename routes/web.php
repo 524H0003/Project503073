@@ -89,6 +89,10 @@ Route::middleware("auth")->group(function () {
 		"disablePassword",
 	])->name("notes.disablePassword");
 
+	Route::post("/notes/{note}/share", [NoteController::class, "share"])->name(
+		"notes.share",
+	);
+
 	Route::post("/notes/{noteId}/image", [
 		ImageController::class,
 		"upload",

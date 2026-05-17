@@ -15,7 +15,7 @@ import { KeyRound, Loader2, Lock, ShieldOff, Unlock } from "lucide-react";
 import { useState } from "react";
 import { route } from "ziggy-js";
 
-export default function NoteLock() {
+export default function NoteLock({ isOwner }: { isOwner: boolean }) {
 	const { data, setData } = useNote();
 
 	const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
@@ -113,24 +113,28 @@ export default function NoteLock() {
 								Khóa lại ngay
 							</Button>
 
-							<Button
-								variant="outline"
-								className="justify-start gap-2 border-none bg-slate-100 text-slate-700 hover:bg-slate-200"
-								onClick={() => setIsChangePasswordModalOpen(true)}
-							>
-								<KeyRound className="h-4 w-4" />
-								Đổi mật khẩu
-							</Button>
+							{isOwner && (
+								<>
+									<Button
+										variant="outline"
+										className="justify-start gap-2 border-none bg-slate-100 text-slate-700 hover:bg-slate-200"
+										onClick={() => setIsChangePasswordModalOpen(true)}
+									>
+										<KeyRound className="h-4 w-4" />
+										Đổi mật khẩu
+									</Button>
 
-							{/* NÚT TẮT BẢO MẬT: Chỉ xuất hiện khi note đang ở trạng thái Unlocked */}
-							<Button
-								variant="outline"
-								className="justify-start gap-2 border-none bg-rose-50 text-rose-600 hover:bg-rose-100"
-								onClick={() => setIsDisablePasswordModalOpen(true)}
-							>
-								<ShieldOff className="h-4 w-4" />
-								Tắt mật khẩu
-							</Button>
+									{/* NÚT TẮT BẢO MẬT: Chỉ xuất hiện khi note đang ở trạng thái Unlocked */}
+									<Button
+										variant="outline"
+										className="justify-start gap-2 border-none bg-rose-50 text-rose-600 hover:bg-rose-100"
+										onClick={() => setIsDisablePasswordModalOpen(true)}
+									>
+										<ShieldOff className="h-4 w-4" />
+										Tắt mật khẩu
+									</Button>
+								</>
+							)}
 						</>
 					)
 				) : (

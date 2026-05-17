@@ -37,7 +37,12 @@ export function NoteProvider({ children }: PropsWithChildren) {
 		[processing, setProcessing] = useState(false),
 		saveToServer = useCallback(
 			debounce((updatedData) => {
-				if (!data.id || !data.is_opened) return;
+				if (
+					!data.id ||
+					!data.is_opened ||
+					data.current_user_permission !== "edit"
+				)
+					return;
 
 				if (navigator.onLine) {
 					router.put(route("notes.update", updatedData.id), updatedData, {
