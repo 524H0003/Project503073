@@ -14,8 +14,7 @@ export type Note = {
     content: string;
     created_at?: string;
     updated_at?: string;
-    is_pinned: any;
-    password?: string;
+    pinned_at?: string;
     user?: User;
     labels?: Label[];
 };

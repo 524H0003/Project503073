@@ -3,16 +3,27 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Note extends Model
 {
-	protected $fillable = ["user_id", "title", "content", "is_pinned", "labels"];
+	protected $fillable = ["user_id", "title", "content", "pinned_at"];
+
+	protected function casts(): array
+	{
+		return [
+			"pinned_at" => "datetime",
+		];
+	}
 
 	public function scopeOrdered($query)
 	{
-		return $query->orderByDesc("is_pinned")->orderByDesc("updated_at");
+		return $query
+			->orderByRaw("pinned_at IS NULL ASC")
+			->orderByDesc("pinned_at")
+			->orderByDesc("updated_at");
 	}
 
 	public function user(): BelongsTo
@@ -30,10 +41,7 @@ class Note extends Model
 		return Attribute::make(set: fn(?string $value) => $value ?? "");
 	}
 
-	protected function is_pinned(): Attribute
-	{
-		return Attribute::make(set: fn(?boolval $value) => $value ?? false);
-	}
+	// --- Các hàm xử lý Label và Tìm kiếm giữ nguyên ---
 
 	public function scopeSearch($query, ?string $search)
 	{
@@ -51,18 +59,6 @@ class Note extends Model
 	public function labels(): BelongsToMany
 	{
 		return $this->belongsToMany(Label::class);
-	}
-
-	public function setLabels(Note $note, Request $request)
-	{
-		// Lọc danh sách ID gửi lên, chỉ giữ lại những ID thực sự thuộc về user này
-		$validLabelIds = auth()
-			->user()
-			->labels()
-			->whereIn("id", $request->label_ids)
-			->pluck("id");
-
-		$note->labels()->sync($validLabelIds);
 	}
 
 	public function scopeFilterByLabels($query, $labelIds)
