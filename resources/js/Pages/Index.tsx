@@ -24,9 +24,9 @@ export default function Dashboard() {
 
 	return Layout(
 		user ? (
-			<div className="flex h-full flex-col bg-[radial-gradient(circle_at_top_left,#e0e7ff,white,#f8fafc)]">
+			<div className="flex h-full flex-col">
 				{/* Header */}
-				<div className="sticky top-0 z-20 border-b border-white/50 bg-white/75 px-4 py-4 shadow-sm backdrop-blur-xl sm:px-6">
+				<div className="sticky top-0 z-20 border-b border-white/50  px-4 py-4 shadow-sm backdrop-blur-xl sm:px-6">
 					<div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 						<div className="flex items-center gap-4">
 							<div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br from-indigo-400 to-cyan-300 shadow-md transition-transform duration-200 hover:scale-105">
@@ -115,7 +115,7 @@ export default function Dashboard() {
 				</div>
 
 				{/* Footer */}
-				<div className="flex flex-wrap items-center justify-between gap-2 border-t bg-white/80 p-4 backdrop-blur-sm">
+				<div className="flex flex-wrap items-center justify-between gap-2 border-t p-4 backdrop-blur-sm">
 					<NavUser alwaysTop className="ml-auto max-w-64" user={user} />
 				</div>
 			</div>

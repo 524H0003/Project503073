@@ -70,7 +70,7 @@ class HandleInertiaRequests extends Middleware
 							"title" => $note->title,
 							"content" => Str::limit(strip_tags($note->content), 32),
 							"updated_at" => $note->updated_at,
-							"is_pinned" => $note->is_pinned,
+							"pinned_at" => $note->pinned_at,
 							"labels" => $note->labels,
 						],
 					)

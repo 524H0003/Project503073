@@ -47,7 +47,7 @@ export function AppSidebar() {
 									>
 										<PinIcon
 											className={`w-4 h-4 transition-transform ${
-												note.is_pinned
+												note.pinned_at !== null
 													? "fill-current rotate-45 text-yellow-400"
 													: "hidden"
 											}`}
