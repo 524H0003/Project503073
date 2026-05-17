@@ -102,16 +102,6 @@ export function SiteHeader() {
 						orientation="vertical"
 						className="mx-2 opacity-50 data-[orientation=vertical]:h-10"
 					/>
-
-					<div className="hidden md:flex items-center gap-2 rounded-full border border-white/40 bg-white/40 px-4 py-1.5 text-xs font-semibold text-indigo-700 shadow-lg backdrop-blur-2xl">
-						<div className="relative">
-							<div className="absolute inset-0 animate-ping rounded-full bg-pink-400 opacity-60" />
-							<Sparkles className="relative h-3.5 w-3.5 text-pink-500" />
-						</div>
-						<span className="bg-linear-to-r from-indigo-600 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-							Editing Mode
-						</span>
-					</div>
 				</div>
 
 				{url.startsWith("/notes/") && (
@@ -127,34 +117,24 @@ export function SiteHeader() {
 							/>
 
 							<div className="mt-1 hidden sm:flex items-center gap-2 text-xs text-slate-500">
-								<div className="relative flex h-2 w-2">
-									<div className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-									<div className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(34,197,94,0.8)]" />
-								</div>
+								{processing ? (
+									<Loader2 className="mr-1 h-4 w-4 animate-spin text-blue-600" />
+								) : navigator.onLine ? (
+									<CloudCheck className="mr-1 h-4 w-4 text-emerald-600" />
+								) : (
+									<CloudOff className="mr-1 h-4 w-4 text-amber-600" />
+								)}
 								<span className="font-medium tracking-wide">
-									Auto saving enabled
+									{processing
+										? "Đang lưu"
+										: navigator.onLine
+											? "Đã lưu lên mây"
+											: "Đang lưu ngoại tuyến"}
 								</span>
 							</div>
 						</div>
 
 						<div className="ml-auto flex flex-wrap items-center gap-2">
-							{processing ? (
-								<div className="flex items-center rounded-full border border-blue-200/40 bg-blue-50/60 px-3 py-1 text-sm text-blue-600 shadow-lg backdrop-blur-xl">
-									<Loader2 className="mr-1 h-4 w-4 animate-spin" />
-									<span className="hidden sm:inline">Đang lưu...</span>
-								</div>
-							) : navigator.onLine ? (
-								<div className="flex items-center rounded-full border border-emerald-200/40 bg-emerald-50/60 px-3 py-1 text-sm text-emerald-600 shadow-lg backdrop-blur-xl">
-									<CloudCheck className="mr-1 h-4 w-4" />
-									<span className="hidden sm:inline">Đã lưu lên mây</span>
-								</div>
-							) : (
-								<div className="flex items-center rounded-full border border-amber-200/40 bg-amber-50/60 px-3 py-1 text-sm text-amber-600 shadow-lg backdrop-blur-xl">
-									<CloudOff className="mr-1 h-4 w-4" />
-									<span className="hidden sm:inline">Đang lưu ngoại tuyến</span>
-								</div>
-							)}
-
 							{/* Share */}
 							<DropdownMenu>
 								<DropdownMenuTrigger asChild>
