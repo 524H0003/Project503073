@@ -187,7 +187,7 @@ class NoteController extends Controller
 		}
 
 		$rules = [
-			"new_password" => "required|string|min:4",
+			"new_password" => "required|string|min:4|confirmed",
 		];
 
 		$validated = $request->validate($rules);
