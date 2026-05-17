@@ -4,10 +4,12 @@ import {
 	useState,
 	ChangeEvent,
 	PropsWithChildren,
+	useCallback,
+	useEffect,
+	useRef,
 } from "react";
 import { router, usePage } from "@inertiajs/react";
 import { debounce } from "lodash";
-import { useCallback, useEffect } from "react";
 import { route } from "ziggy-js";
 import { Note } from "@/types/model";
 import { IPage } from "@/lib/types";
@@ -30,38 +32,92 @@ export function NoteProvider({ children }: PropsWithChildren) {
 		noteId = Number(url.split("/")[2]),
 		{ note } = usePage<{ note: Note } & IPage>().props;
 
-	const [data, setData] = useState<NoteForm>({
-			...note,
-			labels: note?.labels!.map((l) => l.id.toString()),
-		}),
-		[processing, setProcessing] = useState(false),
-		saveToServer = useCallback(
-			debounce((updatedData) => {
-				if (
-					!data.id ||
-					!data.is_opened ||
-					!["edit", "owner"].some((i) => data.current_user_permission == i)
-				)
-					return;
+	const [data, setData] = useState<NoteForm>(() => ({
+		...note,
+		labels: note?.labels!.map((l) => l.id.toString()) || [],
+	}));
+	const [processing, setProcessing] = useState(false);
 
-				if (navigator.onLine) {
-					router.put(route("notes.update", updatedData.id), updatedData, {
-						preserveScroll: true,
-						preserveState: true,
-						onFinish: () => setProcessing(false),
-					});
-				} else {
-					localStorage.setItem(
-						`offline_note_${data.id}`,
-						JSON.stringify(updatedData),
-					);
-					console.log("Đã lưu tạm offline");
-					setProcessing(false);
-				}
-			}, 500),
-			[],
+	// Cờ kiểm soát tránh vòng lặp tự động lưu khi nhận dữ liệu từ WebSocket
+	const isIncomingUpdateRef = useRef(false);
+	// Lưu noteId hiện tại để kiểm soát khi đổi trang
+	const currentNoteIdRef = useRef<number>(noteId);
+
+	// 1. Logic lưu dữ liệu lên server (Đã sửa lỗi biến `data` thành `updatedData` bên trong hàm)
+	const saveToServer = useCallback(
+		debounce((updatedData: NoteForm) => {
+			if (
+				!updatedData.id ||
+				!updatedData.is_opened ||
+				!["edit", "owner"].some((i) => updatedData.current_user_permission == i)
+			)
+				return;
+
+			if (navigator.onLine) {
+				router.put(route("notes.update", updatedData.id), updatedData, {
+					preserveScroll: true,
+					preserveState: true,
+					onFinish: () => setProcessing(false),
+				});
+			} else {
+				localStorage.setItem(
+					`offline_note_${updatedData.id}`,
+					JSON.stringify(updatedData),
+				);
+				console.log("Đã lưu tạm offline");
+				setProcessing(false);
+			}
+		}, 500),
+		[],
+	);
+
+	// 2. 🟢 LẮNG NGHE WEBSOCKET REAL-TIME TỪ LARAVEL REVERB
+	useEffect(() => {
+		if (!noteId || isNaN(noteId)) return;
+		if (!window.Echo) {
+			console.error("Laravel Echo chưa được khởi tạo ở bootstrap.ts");
+			return;
+		}
+
+		console.log(
+			`[WebSocket]: Đang kết nối vào phòng private 'notes.${noteId}'`,
 		);
 
+		const channel = window.Echo.private(`notes.${noteId}`).listen(
+			".NoteUpdated",
+			(e: { note: Note }) => {
+				const incomingNote = e.note;
+
+				setData((prev) => {
+					// Nếu thời gian cập nhật trùng nhau, không cập nhật lại giao diện
+					if (prev.updated_at === incomingNote.updated_at) {
+						return prev;
+					}
+
+					console.log("[WebSocket]: Nhận cập nhật mới từ client khác.");
+					// Đánh dấu đây là dữ liệu từ server đổ về, không được tự động trigger saveToServer
+					isIncomingUpdateRef.current = true;
+
+					return {
+						...prev,
+						title: incomingNote.title,
+						content: incomingNote.content,
+						labels: incomingNote.labels?.map((l) => l.id.toString()) || [],
+						shared_users: incomingNote.shared_users,
+						updated_at: incomingNote.updated_at,
+					};
+				});
+			},
+		);
+
+		// Hủy lắng nghe khi người dùng chuyển trang hoặc tắt component
+		return () => {
+			console.log(`[WebSocket]: Đã rời phòng 'notes.${noteId}'`);
+			window.Echo.leave(`notes.${noteId}`);
+		};
+	}, [noteId]);
+
+	// 3. Hàm xử lý khi người dùng gõ phím thay đổi form
 	function handleChange<T extends HTMLElement & { value: string }>(
 		e: ChangeEvent<T>,
 	) {
@@ -74,15 +130,29 @@ export function NoteProvider({ children }: PropsWithChildren) {
 	}
 
 	useEffect(() => {
+		if (isIncomingUpdateRef.current) {
+			isIncomingUpdateRef.current = false;
+			return;
+		}
+
+		if (currentNoteIdRef.current !== noteId) {
+			return;
+		}
+
 		setProcessing(true);
 		saveToServer(data);
-	}, [data?.title, data?.content, data?.labels, saveToServer]);
+	}, [data.title, data.content, data.labels, saveToServer, noteId]);
 
-	useEffect(
-		() =>
-			setData({ ...note, labels: note?.labels!.map((l) => l.id.toString()) }),
-		[noteId],
-	);
+	useEffect(() => {
+		if (note && currentNoteIdRef.current !== noteId) {
+			currentNoteIdRef.current = noteId;
+			isIncomingUpdateRef.current = true;
+			setData({
+				...note,
+				labels: note.labels!.map((l) => l.id.toString()) || [],
+			});
+		}
+	}, [noteId, note]);
 
 	return (
 		<NoteContext.Provider

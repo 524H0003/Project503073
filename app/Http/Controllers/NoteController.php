@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Note;
 use Inertia\Inertia;
+use App\Events\NoteUpdated;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -112,6 +113,8 @@ class NoteController extends Controller
 		}
 
 		$note->save();
+
+		broadcast(new NoteUpdated($note))->toOthers();
 
 		// Cập nhật nhãn (Chỉ thực hiện khi không bị khóa)
 		if ($request->has("labels") && !$isCurrentlyLocked) {

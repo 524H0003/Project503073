@@ -63,7 +63,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { IPage } from "@/lib/types";
-import { Label, User } from "@/types/model";
+import { Label, Note, User } from "@/types/model";
 import { cn } from "@/lib/utils";
 import NoteLock from "./buttons/NoteLock";
 import { useState } from "react";
@@ -74,7 +74,9 @@ export function SiteHeader() {
 	const { data, processing, handleChange, setData } = useNote();
 
 	const [shareEmail, setShareEmail] = useState("");
-	const [sharePermission, setSharePermission] = useState("view");
+	const [sharePermission, setSharePermission] = useState<"view" | "edit">(
+		"view",
+	);
 
 	const errors = props.errors as any;
 
@@ -138,7 +140,6 @@ export function SiteHeader() {
 				}),
 				{
 					onSuccess: () => {
-						// Lọc bỏ User đã bị xóa quyền ra khỏi danh sách hiển thị
 						setData((prevData) => ({
 							...prevData,
 							shared_users: prevData.shared_users?.filter(
@@ -156,25 +157,15 @@ export function SiteHeader() {
 					permission: action,
 				},
 				{
-					onSuccess: () => {
-						setData((prevData) => {
-							const updatedUsers = prevData.shared_users?.map((user: any) => {
-								if (user.email === targetEmail) {
-									return {
-										...user,
-										pivot: {
-											...user.pivot,
-											permission: action,
-										},
-									};
-								}
-								return user;
-							});
-							return {
+					onSuccess: (page) => {
+						const incomingNote = page.props.note as Note;
+
+						if (incomingNote && incomingNote.shared_users) {
+							setData((prevData) => ({
 								...prevData,
-								shared_users: updatedUsers,
-							};
-						});
+								shared_users: incomingNote.shared_users,
+							}));
+						}
 					},
 				},
 			);
@@ -282,7 +273,10 @@ export function SiteHeader() {
 
 									{/* Form thêm email chia sẻ mới */}
 									<form
-										onSubmit={handleShareSubmit}
+										onSubmit={(e) => {
+											e.preventDefault();
+											handleUpdateOrRemoveShare(shareEmail, sharePermission);
+										}}
 										className="mt-2 flex items-center gap-2"
 									>
 										<div className="flex-1">
@@ -297,7 +291,9 @@ export function SiteHeader() {
 										</div>
 										<Select
 											value={sharePermission}
-											onValueChange={setSharePermission}
+											onValueChange={(e: "view" | "edit") =>
+												setSharePermission(e)
+											}
 										>
 											<SelectTrigger className="w-25 rounded-xl border-slate-200 bg-white/50 text-sm">
 												<SelectValue />
