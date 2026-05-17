@@ -25,9 +25,20 @@ export default function NoteLock() {
 	const handleUnlock = (e: React.FormEvent) => {
 		e.preventDefault();
 		passwordForm.post(route("notes.unlock", data.id), {
-			onSuccess: () => {
+			onSuccess: (page) => {
 				setIsPasswordModalOpen(false);
-				setData({ ...data, is_opened: true });
+
+				const updatedNote = page.props.note as any;
+
+				if (updatedNote) {
+					setData({
+						...data,
+						is_opened: updatedNote.is_opened,
+						content: updatedNote.content ?? "",
+						title: updatedNote.title ?? "",
+					});
+				}
+
 				passwordForm.reset();
 			},
 		});
@@ -38,7 +49,7 @@ export default function NoteLock() {
 		passwordForm.patch(route("notes.update", data.id), {
 			onSuccess: () => {
 				setIsPasswordModalOpen(false);
-				setData({ ...data, is_opened: false, is_locked: true });
+				setData({ ...data, is_opened: false, is_locked: true, content: null! });
 				passwordForm.reset();
 			},
 		});
@@ -46,7 +57,7 @@ export default function NoteLock() {
 
 	const handleLockManual = () => {
 		router.post(route("notes.lock", data.id));
-		setData({ ...data, is_opened: false });
+		setData({ ...data, is_opened: false, content: null! });
 	};
 
 	const isCurrentlyLocked = !data.is_opened;

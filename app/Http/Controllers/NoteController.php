@@ -149,6 +149,9 @@ class NoteController extends Controller
 			Session::put("unlocked_notes", $unlocked);
 		}
 
+		$note->refresh();
+		$note->load("labels:id,name");
+
 		return back();
 	}
 
@@ -159,6 +162,9 @@ class NoteController extends Controller
 		$unlocked = array_diff($unlocked, [$note->id]);
 
 		Session::put("unlocked_notes", $unlocked);
+
+		$note->refresh();
+		$note->load("labels:id,name");
 
 		return back();
 	}
