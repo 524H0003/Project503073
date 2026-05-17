@@ -20,7 +20,8 @@ class NotePolicy
 	 */
 	public function view(User $user, Note $note): bool
 	{
-		return $user->id === $note->user_id;
+		return $note->user_id === $user->id ||
+			$note->sharedUsers()->where("user_id", $user->id)->exists();
 	}
 
 	/**
@@ -36,7 +37,12 @@ class NotePolicy
 	 */
 	public function update(User $user, Note $note): bool
 	{
-		return $user->id === $note->user_id;
+		if ($note->user_id === $user->id) {
+			return true;
+		}
+
+		$shared = $note->sharedUsers()->where("user_id", $user->id)->first();
+		return $shared && $shared->pivot->permission === "edit";
 	}
 
 	/**

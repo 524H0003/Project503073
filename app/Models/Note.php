@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class Note extends Model
@@ -21,7 +22,12 @@ class Note extends Model
 
 	protected $hidden = ["password"];
 
-	protected $appends = ["is_locked", "is_opened"];
+	protected $appends = ["is_locked", "is_opened", "current_user_permission"];
+
+	/**
+	 * Eager load các mối quan hệ này theo mặc định.
+	 */
+	protected $with = ["sharedUsers:id,name,email"];
 
 	protected function casts(): array
 	{
@@ -55,6 +61,31 @@ class Note extends Model
 			->orderByDesc("updated_at");
 	}
 
+	public function getCurrentUserPermissionAttribute(): ?string
+	{
+		$userId = Auth::id();
+		if (!$userId) {
+			return null;
+		}
+
+		if ($this->user_id === $userId) {
+			return "owner";
+		}
+
+		$shared = $this->sharedUsers()->where("user_id", $userId)->first();
+		return $shared ? $shared->pivot->permission : null;
+	}
+
+	public function sharedUsers(): BelongsToMany
+	{
+		return $this->belongsToMany(User::class, "note_user")
+			->withPivot("permission")
+			->withTimestamps();
+	}
+
+	/**
+	 * Chủ sở hữu ghi chú
+	 */
 	public function user(): BelongsTo
 	{
 		return $this->belongsTo(User::class);
