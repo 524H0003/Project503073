@@ -55,15 +55,17 @@ class NoteController extends Controller
 	}
 
 	/**
-	 * Cập nhật ghi chú
+	 * Cập nhật ghi chú (Tiêu đề, Nội dung, Nhãn, Thiết lập Mật khẩu ban đầu)
 	 */
 	public function update(Request $request, Note $note)
 	{
 		$this->authorize("update", $note);
 
+		// Lớp bảo vệ: Kiểm tra xem ghi chú có đang bị khóa hay không
 		$unlockedNotes = session("unlocked_notes", []);
-		$isUnlocked =
-			!$note->getIsLockedAttribute() || in_array($note->id, $unlockedNotes);
+		$isCurrentlyLocked =
+			!empty($note->getAttributes()["password"]) &&
+			!in_array($note->id, $unlockedNotes);
 
 		$validated = $request->validate([
 			"title" => "nullable|string|max:255",
@@ -73,12 +75,17 @@ class NoteController extends Controller
 			"labels.*" => "exists:labels,id",
 		]);
 
-		if ($request->has("content") || $request->has("title")) {
-			if (!$isUnlocked) {
-				return back()->with(
-					"message",
-					"You need to unlock note to edit content",
-				);
+		// Nếu ghi chú ĐANG BỊ KHÓA, chặn đứng mọi hành vi sửa Title, Content hoặc đổi danh sách Labels
+		if ($isCurrentlyLocked) {
+			if (
+				$request->has("content") ||
+				$request->has("title") ||
+				$request->has("labels")
+			) {
+				return back()->withErrors([
+					"message" =>
+						"Bạn cần phải mở khóa ghi chú này trước khi chỉnh sửa hoặc thay đổi cấu trúc.",
+				]);
 			}
 		}
 
@@ -91,13 +98,18 @@ class NoteController extends Controller
 				: $note->content,
 		]);
 
-		if ($request->filled("password")) {
+		// Chỉ cho phép gán mật khẩu ban đầu nếu chưa từng có mật khẩu
+		if (
+			$request->filled("password") &&
+			empty($note->getAttributes()["password"])
+		) {
 			$note->password = $validated["password"];
 		}
 
 		$note->save();
 
-		if ($request->has("labels")) {
+		// Cập nhật nhãn (Chỉ thực hiện khi không bị khóa)
+		if ($request->has("labels") && !$isCurrentlyLocked) {
 			$validIds = auth()
 				->user()
 				->labels()
@@ -113,19 +125,54 @@ class NoteController extends Controller
 	}
 
 	/**
-	 * Xóa ghi chú
+	 * Xóa ghi chú (Chỉ cho phép xóa khi ghi chú không khóa hoặc đã được mở khóa)
 	 */
 	public function destroy(Note $note)
 	{
 		$this->authorize("delete", $note);
+
+		$hasPassword = !empty($note->getAttributes()["password"]);
+
+		if ($hasPassword) {
+			$unlockedNotes = session("unlocked_notes", []);
+			$isCurrentlyUnlocked = in_array($note->id, $unlockedNotes);
+
+			// Nếu ghi chú có mật khẩu nhưng CHƯA ĐƯỢC MỞ KHÓA, chặn hành động xóa ngay lập tức
+			if (!$isCurrentlyUnlocked) {
+				return back()->withErrors([
+					"message" => "Bạn cần phải mở khóa ghi chú này trước khi xóa.",
+				]);
+			}
+
+			// Dọn dẹp Session
+			$unlockedNotes = array_diff($unlockedNotes, [$note->id]);
+			session()->put("unlocked_notes", $unlockedNotes);
+		}
 
 		$note->delete();
 
 		return redirect()->route("notes.index");
 	}
 
+	/**
+	 * Ghim / Bỏ ghim ghi chú (Double Protection Layer)
+	 */
 	public function togglePin(Note $note)
 	{
+		$this->authorize("update", $note);
+
+		// Lớp bảo vệ: Kiểm tra nếu note có mật khẩu và chưa unlock thì KHÔNG cho phép ghim
+		$hasPassword = !empty($note->getAttributes()["password"]);
+		if ($hasPassword) {
+			$unlockedNotes = session("unlocked_notes", []);
+			if (!in_array($note->id, $unlockedNotes)) {
+				return back()->withErrors([
+					"message" =>
+						"Bạn cần phải mở khóa ghi chú này trước khi thay đổi trạng thái ghim.",
+				]);
+			}
+		}
+
 		$note->update([
 			"pinned_at" => $note->pinned_at ? null : now(),
 		]);
@@ -133,6 +180,9 @@ class NoteController extends Controller
 		return back();
 	}
 
+	/**
+	 * Mở khóa ghi chú (Xác thực mật khẩu đưa vào Session)
+	 */
 	public function unlock(Request $request, Note $note)
 	{
 		$request->validate([
@@ -140,7 +190,9 @@ class NoteController extends Controller
 		]);
 
 		if (!Hash::check($request->password, $note->password)) {
-			return back()->with("message", "Wrong password");
+			return back()->withErrors([
+				"password" => "Mật khẩu mở khóa ghi chú không chính xác.",
+			]);
 		}
 
 		$unlocked = Session::get("unlocked_notes", []);
@@ -155,17 +207,17 @@ class NoteController extends Controller
 		return back();
 	}
 
+	/**
+	 * Khóa lại ghi chú chủ động
+	 */
 	public function lock(Note $note)
 	{
 		$hasPassword = !empty($note->getAttributes()["password"]);
 
 		if ($hasPassword) {
 			$unlocked = Session::get("unlocked_notes", []);
-
 			$unlocked = array_diff($unlocked, [$note->id]);
-
 			Session::put("unlocked_notes", $unlocked);
-
 			$note->refresh();
 		}
 
@@ -174,16 +226,19 @@ class NoteController extends Controller
 		return back();
 	}
 
+	/**
+	 * Thay đổi mật khẩu ghi chú (Yêu cầu phải unlock trước đó)
+	 */
 	public function changePassword(Request $request, Note $note)
 	{
 		$this->authorize("update", $note);
 
 		$unlocked = Session::get("unlocked_notes", []);
 		if (!in_array($note->id, $unlocked)) {
-			return back()->with(
-				"message",
-				"You need to unlock the note before changing password.",
-			);
+			return back()->withErrors([
+				"message" =>
+					"Bạn cần phải mở khóa ghi chú trước khi tiến hành đổi mật khẩu mới.",
+			]);
 		}
 
 		$rules = [
@@ -208,13 +263,14 @@ class NoteController extends Controller
 	{
 		$this->authorize("update", $note);
 
-		// 1. Kiểm tra xem ghi chú hiện tại có thực sự đang cài mật khẩu không
 		$hasPassword = !empty($note->getAttributes()["password"]);
 		if (!$hasPassword) {
-			return back()->with("message", "Ghi chú này hiện không có mật khẩu.");
+			return back()->withErrors([
+				"message" => "Ghi chú này hiện không có mật khẩu cấu hình.",
+			]);
 		}
 
-		// 2. Bảo mật nâng cao: Bắt buộc ghi chú phải đang ở trạng thái mở khóa (đã nhập pass trước đó)
+		// Bắt buộc ghi chú phải đang ở trạng thái mở khóa trong session mới được quyền gỡ bỏ bảo mật
 		$unlockedNotes = session("unlocked_notes", []);
 		if (!in_array($note->id, $unlockedNotes)) {
 			return back()->withErrors([
@@ -223,18 +279,16 @@ class NoteController extends Controller
 			]);
 		}
 
-		// 3. Tiến hành gỡ bỏ mật khẩu
 		$note->password = null;
 		$note->save();
 
-		// 4. Dọn dẹp: Xóa ID ghi chú khỏi Session unlocked vì ghi chú giờ đã là ghi chú thường
+		// Xóa khỏi danh sách đã unlock vì cấu trúc note đã trở về trạng thái bình thường
 		$unlockedNotes = array_diff($unlockedNotes, [$note->id]);
 		session()->put("unlocked_notes", $unlockedNotes);
 
-		// 5. Đồng bộ lại dữ liệu mới nhất trả về cho Inertia
 		$note->refresh();
 		$note->load("labels:id,name");
 
-		return back()->with("message", "Đã tắt tính năng bảo mật bằng mật khẩu.");
+		return back();
 	}
 }

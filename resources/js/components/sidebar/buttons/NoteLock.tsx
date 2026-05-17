@@ -9,6 +9,7 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { IPage } from "@/lib/types";
 import { router, useForm } from "@inertiajs/react";
 import { KeyRound, Loader2, Lock, ShieldOff, Unlock } from "lucide-react";
 import { useState } from "react";
@@ -42,15 +43,9 @@ export default function NoteLock() {
 		passwordForm.post(route("notes.unlock", data.id), {
 			onSuccess: (page) => {
 				setIsPasswordModalOpen(false);
-				const updatedNote = page.props.note as any;
-				if (updatedNote) {
-					setData({
-						...data,
-						is_opened: updatedNote.is_opened,
-						content: updatedNote.content ?? "",
-						title: updatedNote.title ?? "",
-					});
-				}
+				const { note: updatedNote } = page.props as unknown as IPage;
+				if (updatedNote) setData({ ...updatedNote, labels: data.labels });
+
 				passwordForm.reset();
 			},
 		});

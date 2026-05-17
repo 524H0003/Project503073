@@ -12,6 +12,7 @@ import {
 	Sparkles,
 	Tag,
 	Check,
+	Lock,
 } from "lucide-react";
 import { useNote } from "../context/NoteEdit";
 import { Input } from "../ui/input";
@@ -57,7 +58,11 @@ export function SiteHeader() {
 
 	let noteLabelIds = data.labels?.map((l: any) => String(l.id || l)) || [];
 
+	const isCurrentlyLocked = data.is_locked && !data.is_opened;
+
 	const toggleLabelToNote = (labelId: number) => {
+		if (isCurrentlyLocked) return;
+
 		const idStr = String(labelId);
 		let newLabels;
 
@@ -74,6 +79,9 @@ export function SiteHeader() {
 	};
 
 	const handleDeleteNote = () => {
+		if (isCurrentlyLocked) {
+			return;
+		}
 		router.delete(route("notes.destroy", data.id));
 	};
 
@@ -107,14 +115,23 @@ export function SiteHeader() {
 				{url.startsWith("/notes/") && (
 					<>
 						<div className="flex-1">
-							<Input
-								value={data.title}
-								id="title"
-								disabled={data.is_locked && !data.is_opened}
-								onChange={handleChange}
-								placeholder="Tiêu đề..."
-								className="min-w-30 flex-1 border-none bg-transparent px-0 text-base font-bold tracking-tight shadow-none placeholder:text-slate-300 focus-visible:ring-0"
-							/>
+							<div className="flex items-center gap-2">
+								{isCurrentlyLocked && (
+									<Lock className="h-4 w-4 text-amber-500 shrink-0" />
+								)}
+								<Input
+									value={data.title}
+									id="title"
+									disabled={isCurrentlyLocked}
+									onChange={handleChange}
+									placeholder="Tiêu đề..."
+									className={cn(
+										"min-w-30 flex-1 border-none bg-transparent px-0 text-base font-bold tracking-tight shadow-none placeholder:text-slate-300 focus-visible:ring-0",
+										isCurrentlyLocked &&
+											"text-slate-400 cursor-not-allowed select-none",
+									)}
+								/>
+							</div>
 
 							<div className="mt-1 hidden sm:flex items-center gap-2 text-xs text-slate-500">
 								{processing ? (
@@ -135,13 +152,16 @@ export function SiteHeader() {
 						</div>
 
 						<div className="ml-auto flex flex-wrap items-center gap-2">
-							{/* Share */}
 							<DropdownMenu>
-								<DropdownMenuTrigger asChild>
+								<DropdownMenuTrigger asChild disabled={isCurrentlyLocked}>
 									<Button
 										variant="outline"
 										size="sm"
-										className="group border-white/40 bg-white/40 shadow-[0_8px_24px_rgba(99,102,241,0.08)] backdrop-blur-2xl transition-all duration-300 hover:-translate-y-0.5 hover:border-indigo-200 hover:bg-linear-to-r hover:from-indigo-50 hover:to-pink-50 hover:text-indigo-600 hover:shadow-[0_12px_30px_rgba(99,102,241,0.18)]"
+										className={cn(
+											"group border-white/40 bg-white/40 shadow-[0_8px_24px_rgba(99,102,241,0.08)] backdrop-blur-2xl transition-all duration-300 hover:-translate-y-0.5 hover:border-indigo-200 hover:bg-linear-to-r hover:from-indigo-50 hover:to-pink-50 hover:text-indigo-600 hover:shadow-[0_12px_30px_rgba(99,102,241,0.18)]",
+											isCurrentlyLocked &&
+												"opacity-50 cursor-not-allowed hover:translate-y-0",
+										)}
 									>
 										<Share className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12 sm:mr-2" />
 										<span className="hidden sm:inline">Chia sẻ</span>
@@ -175,7 +195,6 @@ export function SiteHeader() {
 								</DropdownMenuContent>
 							</DropdownMenu>
 
-							{/* Menu */}
 							<DropdownMenu>
 								<DropdownMenuTrigger asChild>
 									<Button
@@ -192,12 +211,15 @@ export function SiteHeader() {
 									className="w-56 rounded-2xl border border-white/40 bg-white/60 p-1 shadow-2xl backdrop-blur-3xl"
 								>
 									<div className="flex flex-col gap-1">
-										{/* Nhãn */}
 										<Popover>
-											<PopoverTrigger asChild>
+											<PopoverTrigger asChild disabled={isCurrentlyLocked}>
 												<Button
 													variant="outline"
-													className="justify-start gap-2 border-none bg-transparent transition-all duration-200 hover:bg-indigo-50 hover:text-indigo-600"
+													className={cn(
+														"justify-start gap-2 border-none bg-transparent transition-all duration-200 hover:bg-indigo-50 hover:text-indigo-600",
+														isCurrentlyLocked &&
+															"opacity-50 cursor-not-allowed",
+													)}
 												>
 													<Tag className="h-4 w-4" />
 													Nhãn
@@ -231,10 +253,13 @@ export function SiteHeader() {
 											</PopoverContent>
 										</Popover>
 
-										{/* Ghim */}
 										<Button
 											variant="outline"
-											className="justify-start gap-2 border-none bg-transparent transition-all duration-200 hover:bg-indigo-50 hover:text-indigo-600"
+											disabled={isCurrentlyLocked}
+											className={cn(
+												"justify-start gap-2 border-none bg-transparent transition-all duration-200 hover:bg-indigo-50 hover:text-indigo-600",
+												isCurrentlyLocked && "opacity-50 cursor-not-allowed",
+											)}
 											onClick={() =>
 												router.patch(route("notes.togglePin", data.id))
 											}
@@ -243,13 +268,19 @@ export function SiteHeader() {
 											Ghim ghi chú
 										</Button>
 
+										{/* Component xử lý đóng/mở/tắt mật khẩu */}
 										<NoteLock />
 
+										{/* Nút Xóa Ghi chú: Nếu bị khóa, sẽ bị vô hiệu hóa (disabled) ngay trên Menu */}
 										<AlertDialog>
-											<AlertDialogTrigger asChild>
+											<AlertDialogTrigger asChild disabled={isCurrentlyLocked}>
 												<Button
 													variant="destructive"
-													className="justify-start gap-2 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-red-300/30"
+													className={cn(
+														"justify-start gap-2 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-red-300/30",
+														isCurrentlyLocked &&
+															"opacity-40 cursor-not-allowed hover:scale-100 shadow-none",
+													)}
 												>
 													<Trash className="h-4 w-4" />
 													Xóa ghi chú
