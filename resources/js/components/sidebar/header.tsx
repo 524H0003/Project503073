@@ -123,7 +123,7 @@ export function SiteHeader() {
 								disabled={data.is_locked && !data.is_opened}
 								onChange={handleChange}
 								placeholder="Tiêu đề..."
-								className="min-w-30 flex-1 border-none bg-transparent px-0 text-base font-bold tracking-tight text-slate-800 shadow-none placeholder:text-slate-300 focus-visible:ring-0"
+								className="min-w-30 flex-1 border-none bg-transparent px-0 text-base font-bold tracking-tight shadow-none placeholder:text-slate-300 focus-visible:ring-0"
 							/>
 
 							<div className="mt-1 hidden sm:flex items-center gap-2 text-xs text-slate-500">
