@@ -15,6 +15,7 @@ export type Note = {
     created_at?: string;
     updated_at?: string;
     pinned_at?: string;
+    permission: any;
     is_locked: any;
     is_opened: any;
     current_user_permission: any;

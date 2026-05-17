@@ -45,6 +45,10 @@ class NoteController extends Controller
 
 		$note->load("labels:id,name");
 
+		$note->sharedUsers->each(function ($user) {
+			$user->permission = $user->pivot ? $user->pivot->permission : null;
+		});
+
 		return Inertia::render("Note", [
 			"note" => $note,
 		]);
@@ -343,6 +347,43 @@ class NoteController extends Controller
 		return back()->with(
 			"message",
 			"Đã chia sẻ thành công quyền {$validated["permission"]} cho tài khoản {$validated["email"]}.",
+		);
+	}
+
+	public function removeShare(Note $note, string $email)
+	{
+		// Lớp bảo vệ 1: Chỉ chủ sở hữu ghi chú mới có quyền gỡ chia sẻ
+		if ($note->user_id !== auth()->id()) {
+			return back()->withErrors([
+				"message" =>
+					"Bạn không có quyền chỉnh sửa cài đặt chia sẻ của ghi chú này.",
+			]);
+		}
+
+		// Lớp bảo vệ 2: Kiểm tra xem ghi chú có đang bị khóa bảo mật hay không
+		$unlockedNotes = session("unlocked_notes", []);
+		$isCurrentlyLocked =
+			!empty($note->getAttributes()["password"]) &&
+			!in_array($note->id, $unlockedNotes);
+
+		if ($isCurrentlyLocked) {
+			return back()->withErrors([
+				"message" =>
+					"Bạn cần phải mở khóa ghi chú trước khi gỡ bỏ cấu hình chia sẻ.",
+			]);
+		}
+
+		// Tìm User theo email truyền từ Frontend sang
+		$user = User::where("email", $email)->first();
+
+		if ($user) {
+			// Sử dụng chính xác hàm quan hệ sharedUsers() đã định nghĩa trong Model Note
+			$note->sharedUsers()->detach($user->id);
+		}
+
+		return back()->with(
+			"message",
+			"Đã hủy quyền truy cập của tài khoản {$email} thành công.",
 		);
 	}
 }

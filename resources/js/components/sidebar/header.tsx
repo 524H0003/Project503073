@@ -132,13 +132,52 @@ export function SiteHeader() {
 
 		if (action === "remove") {
 			router.delete(
-				route("notes.share.remove", { note: data.id, email: targetEmail }),
+				route("notes.share.remove", {
+					note: data.id,
+					email: targetEmail,
+				}),
+				{
+					onSuccess: () => {
+						// Lọc bỏ User đã bị xóa quyền ra khỏi danh sách hiển thị
+						setData((prevData) => ({
+							...prevData,
+							shared_users: prevData.shared_users?.filter(
+								(user) => user.email !== targetEmail,
+							),
+						}));
+					},
+				},
 			);
 		} else {
-			router.post(route("notes.share", data.id), {
-				email: targetEmail,
-				permission: action,
-			});
+			router.post(
+				route("notes.share", data.id),
+				{
+					email: targetEmail,
+					permission: action,
+				},
+				{
+					onSuccess: () => {
+						setData((prevData) => {
+							const updatedUsers = prevData.shared_users?.map((user: any) => {
+								if (user.email === targetEmail) {
+									return {
+										...user,
+										pivot: {
+											...user.pivot,
+											permission: action,
+										},
+									};
+								}
+								return user;
+							});
+							return {
+								...prevData,
+								shared_users: updatedUsers,
+							};
+						});
+					},
+				},
+			);
 		}
 	};
 
@@ -229,7 +268,7 @@ export function SiteHeader() {
 									</Button>
 								</DialogTrigger>
 
-								<DialogContent className="rounded-2xl border border-white/40 bg-white/80 backdrop-blur-3xl shadow-2xl max-w-[90vw] sm:max-w-[480px]">
+								<DialogContent className="rounded-2xl border border-white/40 bg-white/80 backdrop-blur-3xl shadow-2xl max-w-[90vw] sm:max-w-120">
 									<DialogHeader>
 										<DialogTitle className="text-slate-800 font-bold flex items-center gap-2">
 											<Share className="h-5 w-5 text-indigo-500" /> Chia sẻ ghi
@@ -309,7 +348,10 @@ export function SiteHeader() {
 														</div>
 														<div className="flex items-center gap-2">
 															<Select
-																value={user.pivot?.permission || "view"}
+																value={
+																	(user as unknown as any)["pivot"]
+																		?.permission || "view"
+																}
 																onValueChange={(val: "view" | "edit") =>
 																	handleUpdateOrRemoveShare(user.email, val)
 																}
@@ -446,7 +488,7 @@ export function SiteHeader() {
 													</Button>
 												</AlertDialogTrigger>
 
-												<AlertDialogContent className="rounded-2xl border border-white/40 bg-white/80 backdrop-blur-2xl shadow-2xl max-w-[90vw] sm:max-w-[420px]">
+												<AlertDialogContent className="rounded-2xl border border-white/40 bg-white/80 backdrop-blur-2xl shadow-2xl max-w-[90vw] sm:max-w-105">
 													<AlertDialogHeader>
 														<AlertDialogTitle className="text-slate-800 font-bold">
 															Bạn có chắc chắn muốn xóa?

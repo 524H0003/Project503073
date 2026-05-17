@@ -93,6 +93,11 @@ Route::middleware("auth")->group(function () {
 		"notes.share",
 	);
 
+	Route::delete("/notes/{note}/share/{email}", [
+		NoteController::class,
+		"removeShare",
+	])->name("notes.share.remove");
+
 	Route::post("/notes/{noteId}/image", [
 		ImageController::class,
 		"upload",
