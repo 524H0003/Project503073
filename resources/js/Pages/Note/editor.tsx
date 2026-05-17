@@ -70,7 +70,7 @@ export function Editor() {
 				className="hidden"
 			/>
 
-			<div className="border-b p-2 flex gap-2 bg-gray-50">
+			<div className="border-b p-2 flex gap-2">
 				<button
 					onClick={() => editor.chain().focus().toggleBold().run()}
 					className="p-1 hover:bg-gray-200 rounded"

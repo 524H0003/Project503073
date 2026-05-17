@@ -125,10 +125,8 @@ class NoteController extends Controller
 
 	public function togglePin(Note $note)
 	{
-		$this->authorize("update", $note);
-
 		$note->update([
-			"is_pinned" => !$note->is_pinned,
+			"pinned_at" => $note->pinned_at ? null : now(),
 		]);
 
 		return back();

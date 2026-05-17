@@ -15,7 +15,7 @@ class Note extends Model
 		"user_id",
 		"title",
 		"content",
-		"is_pinned",
+ "pinned_at",
 		"password",
 	];
 
@@ -25,7 +25,7 @@ class Note extends Model
 	{
 		return [
 			"password" => "hashed",
-			"is_pinned" => "boolean", // Cast thẳng ở đây cho tiện
+			"pinned_at" => "datetime",
 		];
 	}
 
@@ -46,7 +46,10 @@ class Note extends Model
 
 	public function scopeOrdered($query)
 	{
-		return $query->orderByDesc("is_pinned")->orderByDesc("updated_at");
+		return $query
+			->orderByRaw("pinned_at IS NULL ASC")
+			->orderByDesc("pinned_at")
+			->orderByDesc("updated_at");
 	}
 
 	public function user(): BelongsTo
@@ -78,10 +81,7 @@ class Note extends Model
 		return Attribute::make(set: fn(?string $value) => $value ?? "");
 	}
 
-	protected function isPinned(): Attribute
-	{
-		return Attribute::make(set: fn($value) => (bool) ($value ?? false));
-	}
+	// --- Các hàm xử lý Label và Tìm kiếm giữ nguyên ---
 
 	public function scopeSearch($query, ?string $search)
 	{
@@ -99,17 +99,6 @@ class Note extends Model
 	public function labels(): BelongsToMany
 	{
 		return $this->belongsToMany(Label::class);
-	}
-
-	public function setLabels(Request $request)
-	{
-		$validLabelIds = auth()
-			->user()
-			->labels()
-			->whereIn("id", $request->label_ids ?? [])
-			->pluck("id");
-
-		$this->labels()->sync($validLabelIds);
 	}
 
 	public function scopeFilterByLabels($query, $labelIds)

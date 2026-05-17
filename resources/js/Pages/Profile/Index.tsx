@@ -23,9 +23,10 @@ import { Loader2, Camera } from "lucide-react";
 import { toast } from "sonner";
 import { route } from "ziggy-js";
 import MainLayout from "@/Layouts/MainLayout";
+import { IPage } from "@/lib/types";
 
 export default function Edit() {
-	const { user, status } = usePage<any>().props;
+	const { user } = usePage<IPage>().props;
 	const avatarInput = useRef<HTMLInputElement>(null);
 
 	const profileForm = useForm({
@@ -44,7 +45,7 @@ export default function Edit() {
 	// Form cấu hình
 	const prefsForm = useForm({
 		theme: user.preferences?.theme || "light",
-		font_size: user.preferences?.font_size || "medium",
+		font_size: user.preferences?.font_size || "base",
 	});
 
 	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -273,9 +274,10 @@ export default function Edit() {
 									<SelectValue placeholder="Chọn cỡ chữ" />
 								</SelectTrigger>
 								<SelectContent>
-									<SelectItem value="small">Nhỏ</SelectItem>
-									<SelectItem value="medium">Vừa</SelectItem>
-									<SelectItem value="large">Lớn</SelectItem>
+									<SelectItem value="sm">Nhỏ</SelectItem>
+									<SelectItem value="base">Vừa</SelectItem>
+									<SelectItem value="lg">Lớn</SelectItem>
+									<SelectItem value="xl">Cực lớn</SelectItem>
 								</SelectContent>
 							</Select>
 						</div>
