@@ -6,16 +6,45 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Http\Request;
 
 class Note extends Model
 {
-	protected $fillable = ["user_id", "title", "content", "pinned_at"];
+	protected $fillable = [
+		"user_id",
+		"title",
+		"content",
+		"pinned_at",
+		"password",
+	];
+
+	protected $hidden = ["password"];
+
+	protected $appends = ["is_locked", "is_opened"];
 
 	protected function casts(): array
 	{
 		return [
+			"password" => "hashed",
 			"pinned_at" => "datetime",
 		];
+	}
+
+	public function getIsLockedAttribute(): bool
+	{
+		$attributes = $this->getAttributes();
+		return !empty($attributes["password"]);
+	}
+
+	public function getIsOpenedAttribute(): bool
+	{
+		if (!$this->is_locked) {
+			return true;
+		}
+
+		$unlockedNotes = session("unlocked_notes", []);
+		return in_array($this->id, $unlockedNotes);
 	}
 
 	public function scopeOrdered($query)
@@ -33,7 +62,21 @@ class Note extends Model
 
 	protected function content(): Attribute
 	{
-		return Attribute::make(set: fn(?string $value) => $value ?? "");
+		return Attribute::make(
+			get: function ($value, $attributes) {
+				$unlockedNotes = Session::get("unlocked_notes", []);
+
+				if (
+					empty($attributes["password"]) ||
+					in_array($this->id, $unlockedNotes)
+				) {
+					return $value;
+				}
+
+				return null;
+			},
+			set: fn(?string $value) => $value ?? "",
+		);
 	}
 
 	protected function title(): Attribute

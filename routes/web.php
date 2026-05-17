@@ -71,6 +71,24 @@ Route::middleware("guest")->group(function () {
 });
 
 Route::middleware("auth")->group(function () {
+	Route::post("/notes/{note}/unlock", [NoteController::class, "unlock"])->name(
+		"notes.unlock",
+	);
+
+	Route::post("/notes/{note}/lock", [NoteController::class, "lock"])->name(
+		"notes.lock",
+	);
+
+	Route::post("/notes/{note}/change-password", [
+		NoteController::class,
+		"changePassword",
+	])->name("notes.changePassword");
+
+	Route::post("/notes/{note}/disable-password", [
+		NoteController::class,
+		"disablePassword",
+	])->name("notes.disablePassword");
+
 	Route::post("/notes/{noteId}/image", [
 		ImageController::class,
 		"upload",

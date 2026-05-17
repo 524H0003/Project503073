@@ -2,7 +2,13 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { useNote } from "@/components/context/NoteEdit";
 import { useEffect, useRef } from "react";
-import { BoldIcon, Heading1Icon, ImagePlus, ItalicIcon } from "lucide-react";
+import {
+	BoldIcon,
+	Heading1Icon,
+	ImagePlus,
+	ItalicIcon,
+	LockKeyhole,
+} from "lucide-react";
 import Image from "@tiptap/extension-image";
 import { uploadImage } from "@/lib/utils";
 import { Head } from "@inertiajs/react";
@@ -59,6 +65,28 @@ export function Editor() {
 
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
+	const isCurrentlyLocked = data.is_locked && !data.is_opened;
+
+	if (isCurrentlyLocked) {
+		return (
+			<div className="h-full flex flex-col items-center justify-center  p-6 select-none animate-in fade-in duration-300">
+				<Head title="Ghi chú bị khóa bảo mật" />
+				<div className="p-4  border border-slate-100 rounded-3xl shadow-xl shadow-slate-200/50 flex flex-col items-center max-w-sm w-full text-center space-y-4">
+					<div className="p-4 bg-indigo-50 text-indigo-600 rounded-2xl">
+						<LockKeyhole className="h-8 w-8" />
+					</div>
+					<div className="space-y-1">
+						<h3 className="font-semibold  text-lg">Ghi chú đã bị khóa</h3>
+						<p className="text-sm px-2">
+							Nội dung của ghi chú này đã được bảo mật. Vui lòng sử dụng tính
+							năng mở khóa trên thanh điều khiển để truy cập nội dung.
+						</p>
+					</div>
+				</div>
+			</div>
+		);
+	}
+
 	return (
 		<div className="h-full flex flex-col">
 			<Head title={data.title} />
@@ -92,7 +120,7 @@ export function Editor() {
 					<Heading1Icon />
 				</button>
 				<button
-					onClick={() => fileInputRef.current?.click()} // Kích hoạt input file ẩn
+					onClick={() => fileInputRef.current?.click()}
 					title="Chèn hình ảnh"
 					className="p-1 rounded hover:bg-gray-200"
 				>
