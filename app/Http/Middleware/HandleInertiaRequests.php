@@ -80,6 +80,18 @@ class HandleInertiaRequests extends Middleware
 				? $request->user()->labels()->select("labels.id", "labels.name")->get()
 				: [],
 			"status" => session("status"),
+			"broadcast_config" => [
+				"driver" => config("broadcasting.default"),
+				"key" => config("broadcasting.connections.reverb.key"),
+				"host" =>
+					config("broadcasting.connections.reverb.options.host") ?:
+					$request->getHost(),
+				"port" => config("broadcasting.connections.reverb.options.port", 8080),
+				"scheme" => config(
+					"broadcasting.connections.reverb.options.scheme",
+					"http",
+				),
+			],
 		];
 	}
 }
