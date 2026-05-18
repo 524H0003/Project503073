@@ -1,6 +1,6 @@
 import Layout from "@/Layouts/MainLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, BookText } from "lucide-react";
+import { FileText, BookText, LayoutGrid, List } from "lucide-react"; // Thêm LayoutGrid và List
 import CreateNote from "@/components/CreateNoteButton";
 import { router, usePage } from "@inertiajs/react";
 import { IPage } from "@/lib/types";
@@ -8,6 +8,7 @@ import AuthenticationCard from "@/components/AuthenticationCard";
 import { NavUser } from "@/components/sidebar/user";
 import { route } from "ziggy-js";
 import { SearchBar } from "@/components/custom/SearchBar";
+import { useState } from "react"; // Thêm useState
 
 const noteColors = [
 	"bg-red-50",
@@ -21,6 +22,9 @@ const noteColors = [
 export default function Dashboard() {
 	const { auth, notes } = usePage<IPage>().props,
 		{ user } = auth;
+
+	// Khởi tạo state: 'grid' hoặc 'list'
+	const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
 	return Layout(
 		user ? (
@@ -50,7 +54,32 @@ export default function Dashboard() {
 							</div>
 						</div>
 
-						<div className="flex items-center justify-end">
+						{/* Nút chuyển đổi View Mode & Thêm Note */}
+						<div className="flex items-center justify-end gap-3">
+							<div className="flex items-center rounded-lg border border-slate-200 bg-white p-1 shadow-xs">
+								<button
+									onClick={() => setViewMode("grid")}
+									className={`rounded-md p-1.5 transition-colors ${
+										viewMode === "grid"
+											? "bg-indigo-50 text-indigo-600"
+											: "text-slate-400 hover:text-slate-600"
+									}`}
+									title="Hiển thị dạng lưới"
+								>
+									<LayoutGrid className="h-4 w-4" />
+								</button>
+								<button
+									onClick={() => setViewMode("list")}
+									className={`rounded-md p-1.5 transition-colors ${
+										viewMode === "list"
+											? "bg-indigo-50 text-indigo-600"
+											: "text-slate-400 hover:text-slate-600"
+									}`}
+									title="Hiển thị dạng danh sách"
+								>
+									<List className="h-4 w-4" />
+								</button>
+							</div>
 							<CreateNote />
 						</div>
 					</div>
@@ -64,30 +93,68 @@ export default function Dashboard() {
 				{/* Notes */}
 				<div className="flex-1 overflow-y-auto px-4 pb-4 pt-4 sm:px-6 sm:pb-6">
 					{notes && notes.length > 0 ? (
-						<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+						/* Đổi class Grid tĩnh thành cấu trúc thay đổi động theo viewMode */
+						<div
+							className={
+								viewMode === "grid"
+									? "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+									: "flex flex-col gap-3 max-w-4xl mx-auto w-full"
+							}
+						>
 							{notes.map((note) => (
 								<Card
 									key={note.id}
 									onClick={() => router.get(route("notes.edit", note.id))}
 									className={`${
 										noteColors[note.id % noteColors.length]
-									} cursor-pointer border-white/60 shadow-sm backdrop-blur-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-xl`}
+									} cursor-pointer border-white/60 shadow-sm backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${
+										viewMode === "list"
+											? "flex flex-row items-center justify-between p-4"
+											: ""
+									}`}
 								>
-									<CardHeader className="p-4 pb-2">
-										<CardTitle className="line-clamp-1 wrap-break-word text-lg text-slate-700">
-											{note.title || "Ghi chú không tiêu đề"}
-										</CardTitle>
-									</CardHeader>
+									{/* Bố cục cấu trúc bên trong thẻ Card thay đổi theo viewMode */}
+									{viewMode === "grid" ? (
+										<>
+											<CardHeader className="p-4 pb-2">
+												<CardTitle className="line-clamp-1 wrap-break-word text-lg text-slate-700">
+													{note.title || "Ghi chú không tiêu đề"}
+												</CardTitle>
+											</CardHeader>
 
-									<CardContent className="p-4 pt-0">
-										<p className="line-clamp-3 wrap-break-word text-sm leading-relaxed text-slate-500/90">
-											{note.content || "Không có nội dung chi tiết..."}
-										</p>
+											<CardContent className="p-4 pt-0">
+												<p className="line-clamp-3 wrap-break-word text-sm leading-relaxed text-slate-500/90">
+													{note.content || "Không có nội dung chi tiết..."}
+												</p>
 
-										<div className="mt-4 inline-flex rounded-full bg-white/70 px-2 py-1 text-xs text-slate-500 shadow-sm">
-											{new Date(note.updated_at!).toLocaleDateString("vi-VN")}
-										</div>
-									</CardContent>
+												<div className="mt-4 inline-flex rounded-full bg-white/70 px-2 py-1 text-xs text-slate-500 shadow-sm">
+													{new Date(note.updated_at!).toLocaleDateString(
+														"vi-VN",
+													)}
+												</div>
+											</CardContent>
+										</>
+									) : (
+										/* Layout dạng LIST */
+										<>
+											<div className="flex flex-1 flex-col pr-4 min-w-0">
+												<CardTitle className="line-clamp-1 wrap-break-word text-base font-semibold text-slate-700 mb-1">
+													{note.title || "Ghi chú không tiêu đề"}
+												</CardTitle>
+												<p className="line-clamp-1 wrap-break-word text-sm text-slate-500/90">
+													{note.content || "Không có nội dung chi tiết..."}
+												</p>
+											</div>
+
+											<div className="flex shrink-0 items-center">
+												<div className="rounded-full bg-white/70 px-2.5 py-1 text-xs text-slate-500 shadow-xs border border-slate-100">
+													{new Date(note.updated_at!).toLocaleDateString(
+														"vi-VN",
+													)}
+												</div>
+											</div>
+										</>
+									)}
 								</Card>
 							))}
 						</div>

@@ -54,6 +54,8 @@ fi
 echo "Clearing Laravel config cache..."
 php artisan config:clear
 
+php artisan storage:link
+
 # 4. Chạy migrations và phân quyền (Sau khi toàn bộ môi trường cấu hình đã sẵn sàng)
 echo "Running database migrations..."
 DB_FILE="/var/www/database/database.sqlite"
