@@ -27,10 +27,11 @@ createInertiaApp({
 			window.Echo = new Echo({
 				broadcaster: "reverb",
 				key: broadcastConfig.key,
-				wsHost: import.meta.env.VITE_REVERB_HOST,
-				wsPort: 443,
-				forceTLS: false,
-				enabledTransports: ["ws"],
+				wsHost: broadcastConfig.host,
+				wsPort: Number(broadcastConfig.port),
+				wssPort: Number(broadcastConfig.port),
+				forceTLS: broadcastConfig.scheme === "https",
+				enabledTransports: ["ws", "wss"],
 			});
 		}
 

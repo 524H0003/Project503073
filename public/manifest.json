@@ -1,0 +1,8 @@
+{
+	"name": "Efficia",
+	"short_name": "Efficia",
+	"start_url": "/",
+	"background_color": "#ffffff",
+	"theme_color": "#ff2d20",
+	"display": "standalone"
+}
