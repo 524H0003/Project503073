@@ -27,7 +27,7 @@ createInertiaApp({
 			window.Echo = new Echo({
 				broadcaster: "reverb",
 				key: broadcastConfig.key,
-				wsHost: broadcastConfig.host,
+				wsHost: import.meta.env.VITE_REVERB_HOST,
 				wsPort: 443,
 				forceTLS: false,
 				enabledTransports: ["ws"],
