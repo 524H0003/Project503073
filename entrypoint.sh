@@ -56,7 +56,18 @@ php artisan config:clear
 
 # 4. Chạy migrations và phân quyền (Sau khi toàn bộ môi trường cấu hình đã sẵn sàng)
 echo "Running database migrations..."
-php artisan migrate --force
+DB_FILE="/var/www/database/database.sqlite"
+
+if [ ! -f "$DB_FILE" ]; then
+    echo "Không tìm thấy file Database. Đang tạo file mới tại $DB_FILE..."
+    touch "$DB_FILE"
+    # Đảm bảo phân quyền cho ứng dụng ghi được vào file này
+    chown www-data:www-data "$DB_FILE"
+    chmod 775 "$DB_FILE"
+
+    echo "Chạy migrations..."
+    php artisan migrate --force
+fi
 
 echo "Setting permissions..."
 chown -R www-data:www-data /var/www/storage /var/www/database
