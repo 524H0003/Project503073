@@ -3251,8 +3251,8 @@ packages:
     resolution: {integrity: sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==}
     engines: {node: '>=8'}
 
-  php-parser@3.5.1:
-    resolution: {integrity: sha512-0By/iMXxBM9nIapBXOdFGHlD2os9t/3Pk1aIavUzCH7jKFPjq1WYeOVOv/iXhELCjlL4ZlzKwK1keyxLQjll8g==}
+  php-parser@3.6.0:
+    resolution: {integrity: sha512-0CZrf+w7Fh9/Jkw64y2Ihh5IQZJjhK6VUxbLJL3CpuA6h0b3yaADAwrXz3WL1qA6PzQEl/cE9K42WKbp0zkECQ==}
 
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
@@ -4099,14 +4099,14 @@ snapshots:
       commander: 12.1.0
       consola: 3.4.2
       glob: 10.5.0
-      php-parser: 3.5.1
+      php-parser: 3.6.0
       typescript: 5.9.3
 
   '@7nohe/laravel-zodgen@0.1.6':
     dependencies:
       commander: 10.0.1
       glob: 9.3.5
-      php-parser: 3.5.1
+      php-parser: 3.6.0
       typescript: 5.9.3
       zod: 3.25.76
 
@@ -4605,7 +4605,7 @@ snapshots:
   '@prettier/plugin-php@0.25.0(prettier@3.8.3)':
     dependencies:
       linguist-languages: 8.2.0
-      php-parser: 3.5.1
+      php-parser: 3.6.0
       prettier: 3.8.3
 
   '@radix-ui/number@1.1.1': {}
@@ -7178,7 +7178,7 @@ snapshots:
 
   path-type@4.0.0: {}
 
-  php-parser@3.5.1: {}
+  php-parser@3.6.0: {}
 
   picocolors@1.1.1: {}
 
