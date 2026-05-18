@@ -35,7 +35,7 @@ return [
 			"app_id" => env("REVERB_APP_ID"),
 			"options" => [
 				"host" => env("REVERB_HOST", "localhost"),
-				"port" => env("REVERB_PORT", 8080),
+				"port" => 8080,
 				"scheme" => env("REVERB_SCHEME", "http"),
 				"useTLS" => env("REVERB_SCHEME", "http") === "https",
 			],

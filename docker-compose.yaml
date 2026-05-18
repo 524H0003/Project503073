@@ -13,7 +13,7 @@ services:
       - APP_URL=http://localhost:8111
 
       - REVERB_HOST=localhost
-      - REVERB_PORT=8111
+
 
       # Cấu hình Database (Dùng SQLite)
       - DB_CONNECTION=sqlite

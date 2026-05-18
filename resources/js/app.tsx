@@ -28,10 +28,9 @@ createInertiaApp({
 				broadcaster: "reverb",
 				key: broadcastConfig.key,
 				wsHost: broadcastConfig.host,
-				wsPort: Number(broadcastConfig.port),
-				wssPort: Number(broadcastConfig.port),
-				forceTLS: broadcastConfig.scheme === "https",
-				enabledTransports: ["ws", "wss"],
+				wsPort: 443,
+				forceTLS: false,
+				enabledTransports: ["ws"],
 			});
 		}
 
