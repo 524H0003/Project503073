@@ -10,10 +10,10 @@ services:
     environment:
       - APP_ENV=production
       - APP_DEBUG=false
-      - APP_URL=http://localhost:8111
+      - APP_URL=http://host.docker.internal:8111
 
-      - REVERB_HOST=localhost
-
+      - REVERB_HOST=host.docker.internal
+      - REVERB_PORT=8111
 
       # Cấu hình Database (Dùng SQLite)
       - DB_CONNECTION=sqlite
