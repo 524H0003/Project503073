@@ -1,23 +1,27 @@
 services:
   app:
-    image: ghcr.io/524h0003/project503073:main
+    build: .
     container_name: laravel_app
     ports:
       - "8111:80"
+      - "8080:8080"
     volumes:
-      - ./storage:/var/www/html/storage
+      - db:/var/www/database
+      - storage:/var/www/storage
     environment:
       - APP_ENV=production
       - APP_DEBUG=false
       - APP_URL=http://localhost:8111
 
+      - REVERB_HOST=localhost
+      - REVERB_PORT=8080
+
       # Cấu hình Database (Dùng SQLite)
       - DB_CONNECTION=sqlite
       - SESSION_DRIVER=file
 
-       # CẤU HÌNH SMTP EMAIL (Thay đổi các giá trị dưới đây)
-      - MAIL_MAILER=MAIL_MAILER=mailersend
-      - MAILERSEND_API_KEY=mlsn.302915309770cdd16dbc8396d26f904d7854e8649f17062abe7313e824ee6836
-      - MAIL_FROM_ADDRESS=MS_L2lDBR@test-69oxl5e3mzkl785k.mlsender.net
-
     restart: unless-stopped
+
+volumes:
+  db:
+  storage:

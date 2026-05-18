@@ -8,9 +8,8 @@ COPY --from=node:25-trixie /usr/local/include/ /usr/local/include/
 COPY --from=node:25-trixie /usr/local/share/ /usr/local/share/
 ENV PATH="/usr/local/bin:${PATH}"
 
-# Cài PHP extension cần thiết để artisan chạy được
 RUN apt-get update && apt-get install -y libzip-dev zip unzip git \
-    && docker-php-ext-install zip
+    && docker-php-ext-install zip 
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /app
@@ -22,24 +21,26 @@ RUN npm install -g pnpm@10.9.0 \
         --optimize-autoloader --no-scripts 
 RUN npm run build
 
-# --- Stage 2: Create image ---
+
+# --- Stage 2: Create image (Runtime) ---
 FROM php:8.3-fpm-alpine
 
-# Chỉ cài các gói runtime cần thiết (Nginx, Supervisor, thư viện ảnh)
-RUN apk add --no-cache nginx supervisor
+RUN apk add --no-cache nginx supervisor libzip-dev bash
 
-# Copy từ các stage build trước
+RUN docker-php-ext-install zip pcntl bcmath
+
 WORKDIR /var/www
+
 COPY --from=build /app/vendor ./vendor
 COPY --from=build /app/public/build ./public/build
 COPY . .
 
-# Copy cấu hình
 COPY nginx.conf /etc/nginx/http.d/default.conf
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 RUN chmod +x ./entrypoint.sh
 
-EXPOSE 80
+EXPOSE 80 8080
+
 ENTRYPOINT ["/var/www/entrypoint.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
