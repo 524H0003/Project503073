@@ -40,7 +40,7 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 RUN chmod +x ./entrypoint.sh
 
-EXPOSE 80 8080
+EXPOSE 80
 
 ENTRYPOINT ["/var/www/entrypoint.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

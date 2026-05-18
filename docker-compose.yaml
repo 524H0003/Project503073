@@ -4,7 +4,6 @@ services:
     container_name: laravel_app
     ports:
       - "8111:80"
-      - "8080:8080"
     volumes:
       - db:/var/www/database
       - storage:/var/www/storage
@@ -14,7 +13,7 @@ services:
       - APP_URL=http://localhost:8111
 
       - REVERB_HOST=localhost
-      - REVERB_PORT=8080
+      - REVERB_PORT=8111
 
       # Cấu hình Database (Dùng SQLite)
       - DB_CONNECTION=sqlite
